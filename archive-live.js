@@ -306,6 +306,7 @@
     document.querySelector('#memory-viewer-description').textContent = memoryIndexItem.media_type === 'little-things' ? '' : memoryIndexItem.caption || '';
     document.querySelector('#memory-viewer-count').textContent = `${currentIndex + 1} / ${visible.length}`;
     viewer.dataset.kind = memoryIndexItem.media_type;
+    viewer.classList.remove('is-video-compact');
     const loadingMessage = document.createElement('p');
     loadingMessage.className = 'viewer-loading';
     loadingMessage.textContent = 'Opening this little memory…';
@@ -326,9 +327,84 @@
         const caption = document.createElement('figcaption'); caption.textContent = memory.caption || memory.title;
         frame.append(image, caption); viewerStage.append(frame);
       } else if (memory.media_type === 'video') {
-        const frame = document.createElement('div'); frame.className = 'memory-viewer__video-frame';
-        const video = document.createElement('video'); video.controls = true; video.playsInline = true; video.preload = 'metadata'; video.src = memory.signed_url;
-        frame.append(video); viewerStage.append(frame);
+        const frame = document.createElement('section'); frame.className = 'video-viewer'; frame.setAttribute('aria-label', 'Video memory player');
+        const screen = document.createElement('div'); screen.className = 'video-viewer__screen';
+        const video = document.createElement('video'); video.className = 'video-viewer__media'; video.controls = false; video.playsInline = true; video.preload = 'metadata'; video.src = memory.signed_url; video.setAttribute('aria-label', memory.title || 'A little film');
+        const playOverlay = document.createElement('button'); playOverlay.className = 'video-viewer__play-overlay'; playOverlay.type = 'button'; playOverlay.setAttribute('aria-label', 'Play video'); playOverlay.textContent = '▶';
+        const videoStatus = document.createElement('p'); videoStatus.className = 'video-viewer__status'; videoStatus.setAttribute('role', 'status'); videoStatus.hidden = true;
+        screen.append(video, playOverlay, videoStatus);
+
+        const controls = document.createElement('div'); controls.className = 'video-viewer__controls';
+        const play = document.createElement('button'); play.className = 'video-viewer__control video-viewer__play'; play.type = 'button'; play.textContent = '▶'; play.setAttribute('aria-label', 'Play video');
+        const elapsed = document.createElement('span'); elapsed.className = 'video-viewer__time video-viewer__time--elapsed'; elapsed.textContent = '0:00';
+        const seek = document.createElement('input'); seek.className = 'video-viewer__seek'; seek.type = 'range'; seek.min = '0'; seek.max = '1000'; seek.value = '0'; seek.disabled = true; seek.setAttribute('aria-label', 'Seek through video');
+        const duration = document.createElement('span'); duration.className = 'video-viewer__time video-viewer__time--duration'; duration.textContent = '0:00';
+        const sound = document.createElement('button'); sound.className = 'video-viewer__control video-viewer__sound'; sound.type = 'button'; sound.textContent = '♫'; sound.setAttribute('aria-label', 'Mute video');
+        const fullscreen = document.createElement('button'); fullscreen.className = 'video-viewer__control video-viewer__fullscreen'; fullscreen.type = 'button'; fullscreen.textContent = '⛶'; fullscreen.setAttribute('aria-label', 'Enter full screen');
+        controls.append(play, elapsed, seek, duration, sound, fullscreen);
+        frame.append(screen, controls); viewerStage.append(frame);
+
+        const updatePlayback = () => {
+          const playing = !video.paused && !video.ended;
+          frame.classList.toggle('is-playing', playing);
+          play.textContent = playing ? 'Ⅱ' : '▶';
+          play.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+          playOverlay.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+          playOverlay.textContent = playing ? 'Ⅱ' : '▶';
+          playOverlay.hidden = playing;
+        };
+        const updateTime = () => {
+          const total = Number.isFinite(video.duration) ? video.duration : 0;
+          const progress = total ? Math.min(100, Math.max(0, video.currentTime / total * 100)) : 0;
+          elapsed.textContent = formatTime(video.currentTime);
+          duration.textContent = formatTime(total);
+          seek.value = String(Math.round(progress * 10));
+          seek.style.setProperty('--seek-progress', `${progress}%`);
+          seek.disabled = !total;
+        };
+        const togglePlayback = async () => {
+          if (video.paused || video.ended) {
+            try { await video.play(); } catch { videoStatus.textContent = 'This video could not be played. Try opening it again when the connection is steadier.'; videoStatus.hidden = false; }
+          } else video.pause();
+        };
+        const updateFullscreen = () => {
+          const active = document.fullscreenElement === frame;
+          frame.classList.toggle('is-fullscreen', active);
+          fullscreen.setAttribute('aria-label', active ? 'Exit full screen' : 'Enter full screen');
+        };
+        play.addEventListener('click', () => { void togglePlayback(); });
+        playOverlay.addEventListener('click', () => { void togglePlayback(); });
+        video.addEventListener('play', updatePlayback);
+        video.addEventListener('pause', updatePlayback);
+        video.addEventListener('ended', updatePlayback);
+        video.addEventListener('timeupdate', updateTime);
+        video.addEventListener('loadedmetadata', () => {
+          if (video.videoWidth && video.videoHeight) {
+            const ratio = video.videoWidth / video.videoHeight;
+            frame.style.setProperty('--video-ratio', String(ratio));
+            screen.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+            viewer.classList.toggle('is-video-compact', ratio < 1.2);
+          }
+          updateTime();
+        });
+        video.addEventListener('durationchange', updateTime);
+        video.addEventListener('error', () => { videoStatus.textContent = 'This video could not be loaded. Refresh the diary and try again.'; videoStatus.hidden = false; });
+        seek.addEventListener('input', () => { if (Number.isFinite(video.duration) && video.duration > 0) video.currentTime = Number(seek.value) / 1000 * video.duration; });
+        sound.addEventListener('click', () => {
+          video.muted = !video.muted;
+          frame.classList.toggle('is-muted', video.muted);
+          sound.textContent = video.muted ? '×' : '♫';
+          sound.setAttribute('aria-label', video.muted ? 'Unmute video' : 'Mute video');
+        });
+        fullscreen.addEventListener('click', async () => {
+          try {
+            if (document.fullscreenElement === frame) await document.exitFullscreen();
+            else if (frame.requestFullscreen) await frame.requestFullscreen();
+            else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+          } catch { videoStatus.textContent = 'Full screen is not available in this browser.'; videoStatus.hidden = false; }
+        });
+        frame.addEventListener('fullscreenchange', updateFullscreen);
+        video.addEventListener('webkitendfullscreen', updateFullscreen);
       } else if (memory.media_type === 'voice') {
         const frame = document.createElement('div'); frame.className = 'memory-viewer__note-frame';
         const icon = document.createElement('span'); icon.textContent = '♫'; icon.setAttribute('aria-hidden', 'true');
