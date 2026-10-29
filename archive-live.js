@@ -145,18 +145,24 @@
       play.setAttribute('aria-hidden', 'true');
       open.append(play);
     } else {
-      const icon = document.createElement('span');
-      icon.setAttribute('aria-hidden', 'true');
-      icon.textContent = type === 'voice' ? '♫' : '✦';
-      open.append(icon);
       if (type === 'little-things') {
+        const envelope = document.createElement('span');
+        envelope.className = 'memory-card__envelope';
+        envelope.setAttribute('aria-hidden', 'true');
+        const flap = document.createElement('i'); flap.className = 'memory-card__envelope-flap';
+        const seal = document.createElement('i'); seal.className = 'memory-card__envelope-seal'; seal.textContent = '♡';
+        envelope.append(flap, seal); open.append(envelope);
         const note = document.createElement('p');
         note.textContent = memory.caption || memory.title;
         open.append(note);
+        const category = document.createElement('small'); category.textContent = 'A LITTLE LETTER · OPEN TO READ'; open.append(category);
+      } else {
+        const icon = document.createElement('span');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = '♫';
+        open.append(icon);
+        const category = document.createElement('small'); category.textContent = 'A VOICE TO KEEP'; open.append(category);
       }
-      const category = document.createElement('small');
-      category.textContent = type === 'voice' ? 'A VOICE TO KEEP' : 'A LITTLE KEEPSAKE';
-      open.append(category);
     }
     const details = document.createElement('div');
     details.className = 'memory-card__details';
@@ -297,7 +303,7 @@
     document.querySelector('#memory-viewer-type').textContent = labels[memoryIndexItem.media_type] || 'KEPT CLOSE';
     document.querySelector('#memory-viewer-title').textContent = memoryIndexItem.title || 'A little memory';
     document.querySelector('#memory-viewer-date').textContent = prettyDate(itemDate(memoryIndexItem));
-    document.querySelector('#memory-viewer-description').textContent = memoryIndexItem.caption || '';
+    document.querySelector('#memory-viewer-description').textContent = memoryIndexItem.media_type === 'little-things' ? '' : memoryIndexItem.caption || '';
     document.querySelector('#memory-viewer-count').textContent = `${currentIndex + 1} / ${visible.length}`;
     viewer.dataset.kind = memoryIndexItem.media_type;
     const loadingMessage = document.createElement('p');
@@ -347,6 +353,25 @@
         audio.addEventListener('pause', () => { play.textContent = '▶'; play.setAttribute('aria-label', 'Play voice note'); wave.classList.remove('is-playing'); });
         audio.addEventListener('loadedmetadata', update); audio.addEventListener('timeupdate', update);
         progress.addEventListener('input', () => { if (Number.isFinite(audio.duration) && audio.duration > 0) audio.currentTime = Number(progress.value) / 1000 * audio.duration; });
+      } else if (memory.media_type === 'little-things' && memory.content_type !== 'application/pdf') {
+        const frame = document.createElement('section'); frame.className = 'memory-letter'; frame.setAttribute('aria-label', 'A little letter from your diary');
+        const paper = document.createElement('article'); paper.className = 'memory-letter__paper';
+        const heading = document.createElement('p'); heading.className = 'memory-letter__kicker'; heading.textContent = 'A LITTLE THOUGHT, KEPT CLOSE';
+        const title = document.createElement('h3'); title.textContent = memory.title || 'A note for us';
+        const message = document.createElement('p'); message.className = 'memory-letter__message'; message.textContent = memory.caption || (memory.content_type === 'text/plain' ? 'Opening this little letter…' : memory.title);
+        const signature = document.createElement('span'); signature.className = 'memory-letter__signature'; signature.textContent = 'always, us  ♡';
+        paper.append(heading, title, message, signature);
+        const envelope = document.createElement('div'); envelope.className = 'memory-letter__envelope'; envelope.setAttribute('aria-hidden', 'true');
+        const back = document.createElement('span'); back.className = 'memory-letter__back';
+        const front = document.createElement('span'); front.className = 'memory-letter__front';
+        const flap = document.createElement('span'); flap.className = 'memory-letter__flap';
+        const seal = document.createElement('span'); seal.className = 'memory-letter__seal'; seal.textContent = '♡';
+        envelope.append(back, front, flap, seal); frame.append(paper, envelope); viewerStage.append(frame);
+        if (!memory.caption && memory.content_type === 'text/plain') {
+          fetch(memory.signed_url).then((response) => { if (!response.ok) throw new Error('Could not open letter'); return response.text(); }).then((text) => {
+            if (renderId === viewerRenderId && viewer.open) message.textContent = text.slice(0, 20000);
+          }).catch(() => { if (renderId === viewerRenderId && viewer.open) message.textContent = memory.title || 'This little letter could not be opened.'; });
+        }
       } else if (memory.content_type === 'application/pdf') {
         const frame = document.createElement('div'); frame.className = 'memory-viewer__photo-frame';
         const documentView = document.createElement('iframe'); documentView.src = memory.signed_url; documentView.title = memory.title;
