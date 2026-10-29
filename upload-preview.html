@@ -18,20 +18,20 @@
     <main class="upload-shell">
       <div class="upload-shell__heading">
         <p class="eyebrow"><span class="eyebrow__line"></span> save this little moment <span class="eyebrow__line"></span></p>
-        <h1>A memory for<br /><em>our little diary.</em></h1>
+        <h1>Add a memory</h1>
         <p>Choose what you’re adding, pick the files, and leave a little note so we remember this moment exactly how it felt.</p>
       </div>
       <form class="upload-card" id="memory-upload-form">
         <div class="upload-categories" role="group" aria-label="Choose memory type">
-          <button class="upload-category is-selected" type="button" data-kind="photo" aria-pressed="true"><span aria-hidden="true">▧</span>photo</button>
-          <button class="upload-category" type="button" data-kind="video" aria-pressed="false"><span aria-hidden="true">▷</span>video</button>
-          <button class="upload-category" type="button" data-kind="voice" aria-pressed="false"><span aria-hidden="true">♫</span>voice note</button>
-          <button class="upload-category" type="button" data-kind="other" aria-pressed="false"><span aria-hidden="true">✦</span>other</button>
+          <button class="upload-category is-selected" type="button" data-kind="photo" aria-pressed="true"><span aria-hidden="true">🌷</span>photo</button>
+          <button class="upload-category" type="button" data-kind="video" aria-pressed="false"><span aria-hidden="true">📹</span>video</button>
+          <button class="upload-category" type="button" data-kind="voice" aria-pressed="false"><span aria-hidden="true">🎙️</span>voice note</button>
+          <button class="upload-category" type="button" data-kind="other" aria-pressed="false"><span aria-hidden="true">💌</span>little thing</button>
         </div>
         <label class="upload-drop" id="upload-drop" for="memory-files">
           <span class="upload-drop__icon" aria-hidden="true">＋</span>
-          <strong>Choose a little memory</strong>
-          <small>or drag your files here · you can pick more than one</small>
+          <strong>Choose files or drop them here</strong>
+          <small>your photos, videos, voice notes &amp; little things</small>
           <input id="memory-files" type="file" multiple accept="image/*" />
         </label>
         <div class="upload-fields">
@@ -42,7 +42,12 @@
         <div class="upload-selection" id="upload-selection" aria-live="polite">No files picked yet.</div>
         <div class="upload-actions">
           <button class="upload-save" type="submit">save this memory <span aria-hidden="true">♡</span></button>
-          <p class="upload-status" id="upload-status" role="status">This preview shows the upload flow; private cloud saving will be connected later.</p>
+          <p class="upload-status" id="upload-status" role="status">Preview only · your files stay on this device and are not uploaded.</p>
+        </div>
+        <div class="upload-preview-result" id="upload-preview-result" hidden>
+          <span aria-hidden="true">✧</span>
+          <p>Your keepsake is ready to preview in its diary chapter.</p>
+          <a href="archive-preview.html#archive-content">see it on the diary pages <b aria-hidden="true">→</b></a>
         </div>
       </form>
       <a class="upload-back" href="archive-preview.html">← return to the diary</a>

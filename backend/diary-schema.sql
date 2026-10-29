@@ -20,6 +20,9 @@ create table if not exists public.memories (
   created_at timestamptz not null default now()
 );
 
+create index if not exists memories_diary_order_idx
+  on public.memories (memory_date desc nulls last, created_at desc, id desc);
+
 alter table public.diary_members enable row level security;
 alter table public.memories enable row level security;
 

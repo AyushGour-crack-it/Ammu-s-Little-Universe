@@ -4,6 +4,10 @@ const selectionNode = document.querySelector('#upload-selection');
 const statusNode = document.querySelector('#upload-status');
 const dropZone = document.querySelector('#upload-drop');
 const categoryButtons = [...document.querySelectorAll('.upload-category')];
+const titleField = uploadForm.querySelector('[name="memory-title"]');
+const dateField = uploadForm.querySelector('[name="memory-date"]');
+const noteField = uploadForm.querySelector('[name="memory-note"]');
+const resultPanel = document.querySelector('#upload-preview-result');
 let selectedKind = 'photo';
 
 const acceptedTypes = {
@@ -11,6 +15,10 @@ const acceptedTypes = {
   video: 'video/*',
   voice: 'audio/*',
   other: '*/*',
+};
+const localToday = () => {
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 };
 
 const renderSelectedFiles = () => {
@@ -23,7 +31,8 @@ const renderSelectedFiles = () => {
     return;
   }
   const summary = document.createElement('span');
-  summary.textContent = `${files.length} ${files.length === 1 ? 'file' : 'files'} selected for the ${selectedKind === 'voice' ? 'voice note' : selectedKind} shelf:`;
+  const shelfName = selectedKind === 'voice' ? 'voice note' : selectedKind === 'other' ? 'little thing' : selectedKind;
+  summary.textContent = `${files.length} ${files.length === 1 ? 'file' : 'files'} selected for the ${shelfName} shelf:`;
   const list = document.createElement('ul');
   files.forEach((file) => {
     const item = document.createElement('li');
@@ -43,11 +52,12 @@ categoryButtons.forEach((button) => {
     });
     fileInput.accept = selectedKind === 'other' ? '' : acceptedTypes[selectedKind];
     fileInput.value = '';
+    resultPanel.hidden = true;
     renderSelectedFiles();
   });
 });
 
-fileInput.addEventListener('change', renderSelectedFiles);
+fileInput.addEventListener('change', () => { resultPanel.hidden = true; renderSelectedFiles(); });
 
 ['dragenter', 'dragover'].forEach((eventName) => {
   dropZone.addEventListener(eventName, (event) => {
@@ -76,8 +86,20 @@ uploadForm.addEventListener('submit', (event) => {
   event.preventDefault();
   if (!fileInput.files.length) {
     statusNode.textContent = 'Pick one or more files first, and they’ll appear in this preview.';
+    resultPanel.hidden = true;
   } else {
-    statusNode.textContent = 'Lovely. This preview has your selection, but it has not been uploaded or saved. We’ll connect private storage when we build the real archive.';
+    const selectedDate = dateField.value || localToday();
+    const files = [...fileInput.files];
+    const sharedTitle = titleField.value.trim();
+    const drafts = files.map((file, index) => ({
+      kind: selectedKind === 'other' ? 'little-things' : selectedKind,
+      title: sharedTitle ? files.length > 1 ? `${sharedTitle} · ${index + 1}` : sharedTitle : file.name.replace(/\.[^.]+$/, ''),
+      date: selectedDate,
+      caption: noteField.value.trim() || 'A little keepsake, ready for its diary page.',
+    }));
+    try { sessionStorage.setItem('little-diary-preview-draft', JSON.stringify(drafts)); } catch { /* The diary remains browsable when storage is unavailable. */ }
+    statusNode.textContent = 'Preview only · no files have been uploaded or saved. See how this keepsake would sit in the diary.';
+    resultPanel.hidden = false;
   }
   statusNode.classList.add('is-visible');
 });

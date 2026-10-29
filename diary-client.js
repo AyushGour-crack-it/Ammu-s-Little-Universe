@@ -48,24 +48,51 @@
     if (error) throw error;
   };
 
-  const listMemories = async () => {
+  const listMemoryIndex = async () => {
     const supabaseClient = requireConfigured();
     const session = await getMemberSession();
     if (!session) return null;
+    const pageSize = 500;
+    const snapshotAt = new Date().toISOString();
+    const memories = [];
+    for (let from = 0; ; from += pageSize) {
+      const to = from + pageSize - 1;
+      const { data, error } = await supabaseClient
+        .from('memories')
+        .select('id,title,media_type,memory_date,caption,content_type,created_at')
+        .lte('created_at', snapshotAt)
+        .order('memory_date', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(from, to);
+      if (error) throw error;
+      memories.push(...(data || []));
+      if (!data || data.length < pageSize) break;
+    }
+    return memories;
+  };
+
+  const getMemoriesByIds = async (ids) => {
+    if (!ids?.length) return [];
+    const supabaseClient = requireConfigured();
+    const session = await getMemberSession();
+    if (!session) return [];
     const { data, error } = await supabaseClient
       .from('memories')
       .select('id,title,media_type,memory_date,caption,storage_path,original_name,content_type,file_size,created_by,created_at')
-      .order('memory_date', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false });
+      .in('id', ids);
     if (error) throw error;
-
-    return Promise.all((data || []).map(async (memory) => {
+    const withSignedUrls = await Promise.all((data || []).map(async (memory) => {
       const { data: signed, error: signedError } = await supabaseClient
         .storage.from(BUCKET).createSignedUrl(memory.storage_path, 60 * 60);
       if (signedError) return { ...memory, signed_url: null, viewer_error: signedError.message };
       return { ...memory, signed_url: signed.signedUrl };
     }));
+    const byId = new Map(withSignedUrls.map((memory) => [memory.id, memory]));
+    return ids.map((id) => byId.get(id)).filter(Boolean);
   };
+
+  const getMemoryById = async (id) => (await getMemoriesByIds([id]))[0] || null;
 
   const uploadMemory = async (file, metadata, session, onStage = () => {}) => {
     const supabaseClient = requireConfigured();
@@ -121,7 +148,9 @@
       const { error } = await supabaseClient.auth.signOut();
       if (error) throw error;
     },
-    listMemories,
+    listMemoryIndex,
+    getMemoriesByIds,
+    getMemoryById,
     uploadMemory,
   };
 })();

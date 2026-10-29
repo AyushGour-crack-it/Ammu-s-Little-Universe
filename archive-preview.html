@@ -49,14 +49,20 @@
           </div>
           <a class="archive-upload-link" href="upload-preview.html"><span aria-hidden="true">＋</span> add a memory</a>
         </div>
+        <nav class="chapter-index" aria-label="Diary chapters">
+          <div class="chapter-index__heading"><span>OUR CHAPTERS</span><span>choose a month to revisit</span></div>
+          <div class="chapter-list" id="chapter-list"></div>
+        </nav>
         <div class="archive-controls" role="group" aria-label="Filter memories">
-          <button class="archive-filter is-active" type="button" data-filter="all" aria-pressed="true">everything <span>06</span></button>
-          <button class="archive-filter" type="button" data-filter="photo" aria-pressed="false">photos</button>
-          <button class="archive-filter" type="button" data-filter="video" aria-pressed="false">videos</button>
-          <button class="archive-filter" type="button" data-filter="voice" aria-pressed="false">voice notes</button>
-          <button class="archive-filter" type="button" data-filter="little-things" aria-pressed="false">little things</button>
+          <button class="archive-filter is-active" type="button" data-filter="all" aria-pressed="true">everything <span data-filter-count="all"></span></button>
+          <button class="archive-filter" type="button" data-filter="photo" aria-pressed="false">photos <span data-filter-count="photo"></span></button>
+          <button class="archive-filter" type="button" data-filter="video" aria-pressed="false">videos <span data-filter-count="video"></span></button>
+          <button class="archive-filter" type="button" data-filter="voice" aria-pressed="false">voice notes <span data-filter-count="voice"></span></button>
+          <button class="archive-filter" type="button" data-filter="little-things" aria-pressed="false">little things <span data-filter-count="little-things"></span></button>
         </div>
-        <div class="memory-grid">
+        <div class="spread-heading"><div><p class="spread-heading__eyebrow">A PAGE FROM OUR STORY</p><h3 id="spread-title">October 2026</h3></div><p class="spread-heading__count" id="spread-count" aria-live="polite"></p></div>
+        <div class="spread-turn-stage" id="spread-turn-stage" aria-live="polite">
+        <div class="memory-grid" id="memory-grid">
           <article class="memory-card memory-card--photo" data-category="photo">
             <button class="memory-card__image" type="button" data-memory-open data-kind="photo" data-src="assets/photos/ammu-purple-glasses.jpeg" data-title="Your softest smile" data-date="Saved with love" data-description="A little picture I always want close." aria-label="Open photo: Your softest smile"><img src="assets/photos/ammu-purple-glasses.jpeg" alt="Ammu wearing round glasses" /><span>✧</span></button>
             <div class="memory-card__details"><p class="memory-card__type">PHOTO · A FAVORITE OF MINE</p><h3>Your softest smile</h3><time>saved with love</time></div>
@@ -82,6 +88,14 @@
             <div class="memory-card__details"><p class="memory-card__type">A LITTLE THING · FROM THE BEGINNING</p><h3>One tiny “Mhmmm”</h3><time>the start of us</time></div>
           </article>
         </div>
+        <div class="spread-empty" id="spread-empty" hidden><span aria-hidden="true">✧</span><p>This page is waiting for its first little memory.</p><a href="upload-preview.html">add one to this chapter</a></div>
+        </div>
+        <nav class="spread-pagination" aria-label="Diary page navigation">
+          <button class="spread-turn" id="previous-spread" type="button"><span aria-hidden="true">←</span> previous spread</button>
+          <span class="spread-pagination__number" id="spread-page-number" aria-live="polite">1 / 1</span>
+          <button class="spread-turn" id="next-spread" type="button">next spread <span aria-hidden="true">→</span></button>
+        </nav>
+        <p class="spread-hint">swipe to turn · scroll to wander · arrow keys work too</p>
         <p class="archive-endnote"><span aria-hidden="true">✦</span> our story, in all its little pieces <span aria-hidden="true">♡</span></p>
         </div>
       </section>

@@ -55,9 +55,13 @@
             <p class="eyebrow"><span class="eyebrow__line"></span> gathered with love</p>
             <h2 id="archive-title">The things<br /><em>we keep.</em></h2>
           </div>
-          <div class="archive-heading__actions"><button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button><a class="archive-upload-link" id="archive-upload-link" href="#"><span aria-hidden="true">＋</span> add a memory</a></div>
+          <div class="archive-heading__actions"><button class="archive-refresh" id="archive-refresh" type="button" aria-label="Refresh diary memories" title="Refresh diary memories">↻</button><button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button><a class="archive-upload-link" id="archive-upload-link" href="#"><span aria-hidden="true">＋</span> add a memory</a></div>
         </div>
         <p class="diary-live-status" id="archive-status" role="status"></p>
+        <nav class="chapter-index" aria-label="Diary chapters">
+          <div class="chapter-index__heading"><span>OUR CHAPTERS</span><span>choose a month to revisit</span></div>
+          <div class="chapter-list" id="chapter-list"></div>
+        </nav>
         <div class="archive-controls" role="group" aria-label="Filter memories">
           <button class="archive-filter is-active" type="button" data-filter="all" aria-pressed="true">everything <span data-count="all">0</span></button>
           <button class="archive-filter" type="button" data-filter="photo" aria-pressed="false">photos <span data-count="photo">0</span></button>
@@ -65,7 +69,17 @@
           <button class="archive-filter" type="button" data-filter="voice" aria-pressed="false">voice notes <span data-count="voice">0</span></button>
           <button class="archive-filter" type="button" data-filter="little-things" aria-pressed="false">little things <span data-count="little-things">0</span></button>
         </div>
+        <div class="spread-heading"><div><p class="spread-heading__eyebrow">A PAGE FROM OUR STORY</p><h3 id="spread-title">Your diary</h3></div><p class="spread-heading__count" id="spread-count" aria-live="polite"></p></div>
+        <div class="spread-turn-stage" id="spread-turn-stage" aria-live="polite">
         <div class="memory-grid" id="memory-grid" aria-live="polite"></div>
+        <div class="spread-empty" id="spread-empty" hidden><span aria-hidden="true">✧</span><p>This page is waiting for its first little memory.</p><a id="empty-upload-link" href="#">add one to this chapter</a></div>
+        </div>
+        <nav class="spread-pagination" aria-label="Diary page navigation">
+          <button class="spread-turn" id="previous-spread" type="button"><span aria-hidden="true">←</span> previous spread</button>
+          <span class="spread-pagination__number" id="spread-page-number" aria-live="polite">1 / 1</span>
+          <button class="spread-turn" id="next-spread" type="button">next spread <span aria-hidden="true">→</span></button>
+        </nav>
+        <p class="spread-hint">swipe to turn · scroll to wander · arrow keys work too</p>
         <p class="archive-endnote"><span aria-hidden="true">✦</span> our story, in all its little pieces <span aria-hidden="true">♡</span></p>
         </div>
       </section>
