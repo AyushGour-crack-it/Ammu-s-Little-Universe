@@ -1,5 +1,7 @@
 # Ammu’s Little Universe
 
+A gift for her.
+
 A responsive birthday website and private shared diary for Ammu. The site uses plain HTML, CSS, and JavaScript, so the pages can be served directly by Vercel without a build step.
 
 ## Pages
