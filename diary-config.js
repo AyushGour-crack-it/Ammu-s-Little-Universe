@@ -4,4 +4,6 @@
 window.DIARY_CONFIG = {
   supabaseUrl: '',
   publishableKey: '',
+  // Set this to the deployed uploader site's URL, for example https://our-uploader.vercel.app/
+  uploaderUrl: '',
 };

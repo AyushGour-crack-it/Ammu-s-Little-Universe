@@ -8,6 +8,7 @@
   const fileInput = document.querySelector('#memory-files');
   const dropZone = document.querySelector('#upload-drop');
   const signOut = document.querySelector('#diary-signout');
+  const diaryLinks = [document.querySelector('#back-to-diary-top'), document.querySelector('#back-to-diary')].filter(Boolean);
   const kinds = [...document.querySelectorAll('.upload-category')];
   const dateField = form.querySelector('[name="memory-date"]');
   const titleField = form.querySelector('[name="memory-title"]');
@@ -55,7 +56,7 @@
   authForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!window.DiaryClient.configured) return say(authStatus, 'Connect Supabase using backend/SETUP.md before signing in.', true);
-    try { await window.DiaryClient.signInWithEmail(authEmail.value, '/upload.html'); say(authStatus, 'Check your inbox for the private sign-in link. Open it in this browser.'); }
+    try { await window.DiaryClient.signInWithEmail(authEmail.value, '/'); say(authStatus, 'Check your inbox for the private sign-in link. Open it in this browser.'); }
     catch (error) { say(authStatus, error.message || 'Could not send the sign-in link.', true); }
   });
   form.addEventListener('submit', async (event) => {
@@ -78,13 +79,17 @@
         }, session, (stage) => say(status, `${stage === 'uploading' ? 'Uploading' : 'Saving'} ${index + 1} of ${files.length}: ${file.name}`));
         saved += 1;
       }
-      say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary. Opening the book…`);
-      window.setTimeout(() => { window.location.href = 'archive.html#archive-content'; }, 900);
+      say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary. The main diary may ask you to sign in there separately.`);
     } catch (error) {
       say(status, `${saved ? `${saved} saved. ` : ''}${error.message || 'The upload could not be completed.'}`, true);
     } finally { saveButton.disabled = false; }
   });
   signOut.addEventListener('click', async () => { await window.DiaryClient.signOut(); location.reload(); });
   if (!window.DiaryClient.configured) say(authStatus, 'Add the Supabase project URL and publishable key to diary-config.js to connect private uploads.', true);
+  const archiveUrl = window.DIARY_CONFIG?.archiveUrl?.trim();
+  if (archiveUrl) diaryLinks.forEach((link) => { link.href = archiveUrl; });
+  else diaryLinks.forEach((link) => {
+    link.addEventListener('click', (event) => { event.preventDefault(); say(status, 'Add the main diary URL to diary-config.js to connect this return link.'); });
+  });
   syncSession(); renderSelection();
 })();

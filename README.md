@@ -7,8 +7,8 @@ A responsive birthday website and private shared diary for Ammu. The site uses p
 ## Pages
 
 - `index.html` is the main website. Its **Our diary** link opens the separate diary page.
-- `archive.html` is the invite-only diary. It shows memories uploaded from `upload.html` in designed cards and custom framed detail views.
-- `upload.html` is the separate uploader. Uploaded media and diary details are saved to the same private Supabase project used by the archive.
+- `archive.html` is the invite-only diary. It shows memories uploaded from the separate uploader site in designed cards and custom framed detail views.
+- `uploader-site/` is a self-contained, standalone uploader website. Deploy it as its own Vercel project (set its root directory to `uploader-site`) or move that folder into a dedicated repository. It saves to the same private Supabase project as the archive. Members sign in separately on each site.
 - `archive-preview.html` and `upload-preview.html` are visual previews with sample content. They do not save or upload files.
 - `preview.html` is an earlier visual preview of the main site.
 
@@ -16,7 +16,7 @@ To preview locally, open `index.html`, `archive-preview.html`, or `upload-previe
 
 ## Connect private uploads
 
-Follow [`backend/SETUP.md`](backend/SETUP.md) to create the free Supabase project, invite both diary members, apply the private storage policies, and set `diary-config.js`. The 50 MB per-file limit is enforced in the app and the private storage bucket.
+Follow [`backend/SETUP.md`](backend/SETUP.md) to create the free Supabase project, invite both diary members, apply the private storage policies, configure both sites, and set their deployed URLs. The 50 MB per-file limit is enforced in the app and the private storage bucket.
 
 Only place the Supabase project URL and publishable key in `diary-config.js`. Never commit a Supabase secret or `service_role` key.
 

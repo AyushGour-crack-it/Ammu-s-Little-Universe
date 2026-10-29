@@ -12,13 +12,13 @@
     <script src="diary-client.js" defer></script>
     <script src="upload-live.js" defer></script>
   </head>
-  <body class="upload-preview-page">
+  <body class="upload-preview-page uploader-site-page">
     <header class="archive-header">
-      <a class="archive-wordmark" href="archive.html"><span aria-hidden="true">☾</span> our little diary</a>
-      <a class="archive-back" href="archive.html">back to our memories <span aria-hidden="true">↗</span></a>
+      <a class="archive-wordmark" href="#top"><span aria-hidden="true">☾</span> our little diary</a>
+      <a class="archive-back" id="back-to-diary-top" href="#">back to our memories <span aria-hidden="true">↗</span></a>
     </header>
     
-    <main class="upload-shell">
+    <main class="upload-shell" id="top">
       <form class="diary-auth diary-auth--upload" id="diary-auth-form"><label for="diary-email">sign in to our private diary</label><div><input id="diary-email" type="email" autocomplete="email" required placeholder="your invited email" /><button type="submit">send sign-in link</button></div><p id="diary-auth-status" role="status">Only our two invited accounts can add memories.</p></form>
       <button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button>
       <div class="upload-shell__heading">
@@ -50,7 +50,7 @@
           <p class="upload-status" id="upload-status" role="status">Choose the kind of memory, then save it to our private diary. Files up to 50 MB.</p>
         </div>
       </form>
-      <a class="upload-back" href="archive.html">← return to the diary</a>
+      <a class="upload-back" id="back-to-diary" href="#">← return to the diary</a>
     </main>
   </body>
 </html>

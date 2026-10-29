@@ -13,6 +13,7 @@
   const counts = [...document.querySelectorAll('[data-count]')];
   const filters = [...document.querySelectorAll('[data-filter]')];
   const signOutButton = document.querySelector('#diary-signout');
+  const uploaderLink = document.querySelector('#archive-upload-link');
   const labels = { photo: 'PHOTO KEEPSAKE', video: 'A LITTLE FILM', voice: 'VOICE NOTE', 'little-things': 'A LITTLE THING' };
   let memories = [];
   let visible = [];
@@ -166,5 +167,16 @@
   viewer.querySelectorAll('[data-viewer-step]').forEach((button) => button.addEventListener('click', () => showMemory(currentIndex + Number(button.dataset.viewerStep))));
   signOutButton.addEventListener('click', async () => { await window.DiaryClient.signOut(); location.reload(); });
   if (!window.DiaryClient.configured) say(archiveStatus, 'Connect the private archive to Supabase using the steps in backend/SETUP.md.', true);
+  const uploaderUrl = window.DIARY_CONFIG?.uploaderUrl?.trim();
+  if (uploaderUrl) {
+    uploaderLink.href = uploaderUrl;
+    uploaderLink.target = '_blank';
+    uploaderLink.rel = 'noopener noreferrer';
+  } else {
+    uploaderLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      say(archiveStatus, 'The separate uploader site is not connected yet. Add its deployed URL to diary-config.js.', true);
+    });
+  }
   if (location.hash === '#archive-content' && window.DiaryClient.configured) openArchive();
 })();
