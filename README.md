@@ -8,7 +8,7 @@ A responsive birthday website and private shared diary for Ammu. The site uses p
 
 - `index.html` is the main website. Its **Our diary** link opens the separate diary page.
 - `archive.html` is the invite-only diary. It shows memories uploaded from the separate uploader site in designed cards and custom framed detail views.
-- `uploader-site/` is a self-contained, standalone uploader website. Deploy it as its own Vercel project (set its root directory to `uploader-site`) or move that folder into a dedicated repository. It saves to the same private Supabase project as the archive. Members sign in separately on each site.
+- The uploader is a separate website in its own [GitHub repository](https://github.com/AyushGour-crack-it/Our-Memories-Uploader). It saves to the same private Supabase project as the archive. Members sign in separately on each site.
 - `archive-preview.html` and `upload-preview.html` are visual previews with sample content. They do not save or upload files.
 - `preview.html` is an earlier visual preview of the main site.
 

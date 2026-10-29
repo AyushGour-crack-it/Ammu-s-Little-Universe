@@ -18,9 +18,9 @@ Think of Vercel as the place that serves the pages, and Supabase as the locked r
    on conflict (user_id) do nothing;
    ```
 
-5. In **Project Settings → API**, copy the Project URL and **publishable** key (or legacy `anon` key) into both [`../diary-config.js`](../diary-config.js) and [`../uploader-site/diary-config.js`](../uploader-site/diary-config.js). The publishable key is okay in browser code when these RLS policies are applied.
-6. Deploy the main website from the repository root, then deploy `uploader-site/` as a separate Vercel project (set that folder as the Root Directory). Alternatively, copy `uploader-site/` into its own GitHub repository and deploy that.
-7. Set the main site's `archive.html` URL as `archiveUrl` in the uploader config and the uploader's deployed URL as `uploaderUrl` in the main [`../diary-config.js`](../diary-config.js).
+5. In **Project Settings → API**, copy the Project URL and **publishable** key (or legacy `anon` key) into [`../diary-config.js`](../diary-config.js) and [`diary-config.js` in the separate uploader repository](https://github.com/AyushGour-crack-it/Our-Memories-Uploader/blob/main/diary-config.js). The publishable key is okay in browser code when these RLS policies are applied.
+6. Deploy the main website from this repository's root, then deploy the uploader from its separate GitHub repository as a second Vercel project.
+7. Set the main site's `archive.html` URL as `archiveUrl` in the uploader repo's config and the uploader's deployed URL as `uploaderUrl` in the main [`../diary-config.js`](../diary-config.js).
 8. Set the main site's deployed URL as the Supabase **Site URL**, and add both the main-site and uploader-site URLs to **Authentication → URL Configuration → Redirect URLs**. Add `http://localhost:8000/**` too for local preview.
 9. Open `archive.html`, request a sign-in link, and open the email link in the same browser. Sign in separately on the uploader site with an invited account; both sites use the same private bucket and memory table.
 
