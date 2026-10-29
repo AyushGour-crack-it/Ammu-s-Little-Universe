@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090d1c" />
+    <title>Our little diary · For Ammu</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="archive-preview.css" />
+    <script src="archive-preview.js" defer></script>
+  </head>
+  <body class="archive-preview-page">
+    <div class="sky-grain" aria-hidden="true"></div>
+    <header class="archive-header">
+      <a class="archive-wordmark" href="index.html"><span aria-hidden="true">☾</span> our little diary</a>
+      <a class="archive-back" href="index.html">back to Ammu’s universe <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="diary-welcome" aria-labelledby="diary-title">
+        <div class="diary-welcome__copy">
+          <p class="eyebrow"><span class="eyebrow__line"></span> a little place for all of us</p>
+          <h1 id="diary-title">Our little<br /><em>time capsule.</em></h1>
+          <p>Every photo, voice note, movie night, and tiny thing we never want to lose—kept together, close to the heart.</p>
+          <span class="diary-welcome__note">just for you and me <span aria-hidden="true">♡</span></span>
+        </div>
+        <div class="diary-book-stage">
+          <div class="diary-book" id="diary-book">
+            <div class="diary-book__pages" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <button class="diary-book__cover" id="open-diary" type="button" aria-controls="archive-content" aria-expanded="false">
+              <span class="diary-book__cover-star" aria-hidden="true">✦</span>
+              <span class="diary-book__cover-kicker">THE LITTLE BOOK OF</span>
+              <span class="diary-book__cover-title">us</span>
+              <span class="diary-book__cover-rule" aria-hidden="true"></span>
+              <span class="diary-book__cover-names">Ammu <i>♡</i> Ayush</span>
+              <span class="diary-book__cover-prompt">open our diary <b aria-hidden="true">→</b></span>
+            </button>
+          </div>
+          <p class="diary-book-stage__caption">a thousand little moments, all in one place</p>
+        </div>
+      </section>
+
+      <section class="archive-content" id="archive-content" hidden aria-labelledby="archive-title">
+        <div class="archive-spread">
+        <div class="archive-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow__line"></span> gathered with love</p>
+            <h2 id="archive-title">The things<br /><em>we keep.</em></h2>
+          </div>
+          <a class="archive-upload-link" href="upload-preview.html"><span aria-hidden="true">＋</span> add a memory</a>
+        </div>
+        <div class="archive-controls" role="group" aria-label="Filter memories">
+          <button class="archive-filter is-active" type="button" data-filter="all" aria-pressed="true">everything <span>06</span></button>
+          <button class="archive-filter" type="button" data-filter="photo" aria-pressed="false">photos</button>
+          <button class="archive-filter" type="button" data-filter="video" aria-pressed="false">videos</button>
+          <button class="archive-filter" type="button" data-filter="voice" aria-pressed="false">voice notes</button>
+          <button class="archive-filter" type="button" data-filter="little-things" aria-pressed="false">little things</button>
+        </div>
+        <div class="memory-grid">
+          <article class="memory-card memory-card--photo" data-category="photo">
+            <button class="memory-card__image" type="button" data-memory-open data-kind="photo" data-src="assets/photos/ammu-purple-glasses.jpeg" data-title="Your softest smile" data-date="Saved with love" data-description="A little picture I always want close." aria-label="Open photo: Your softest smile"><img src="assets/photos/ammu-purple-glasses.jpeg" alt="Ammu wearing round glasses" /><span>✧</span></button>
+            <div class="memory-card__details"><p class="memory-card__type">PHOTO · A FAVORITE OF MINE</p><h3>Your softest smile</h3><time>saved with love</time></div>
+          </article>
+          <article class="memory-card memory-card--photo" data-category="photo">
+            <button class="memory-card__image memory-card__image--strip" type="button" data-memory-open data-kind="photo" data-src="assets/photobooth/oct-19-cat-strip.jpg" data-title="The cat stole the show" data-date="October 19 · together on screen" data-description="A silly afternoon we got to keep." aria-label="Open photo: The cat stole the show"><img src="assets/photobooth/oct-19-cat-strip.jpg" alt="A color photo booth strip of us with a big black cat sticker" /><span>♡</span></button>
+            <div class="memory-card__details"><p class="memory-card__type">PHOTOBOOTH · OCT 19</p><h3>The cat stole the show</h3><time>together on screen</time></div>
+          </article>
+          <article class="memory-card memory-card--voice" data-category="voice">
+            <button class="memory-card__art" type="button" data-memory-open data-kind="voice" data-src="assets/audio/my-voice-note-01.ogg" data-title="A little hello for you" data-date="Voice note 1 of 3" data-description="One of the little moments I saved for you." aria-label="Open voice note: A little hello for you"><span aria-hidden="true">♫</span><small>MY VOICE</small></button>
+            <div class="memory-card__details"><p class="memory-card__type">VOICE NOTE · FROM AYUSH</p><h3>A little hello for you</h3><audio controls preload="none" aria-label="Play a voice note from Ayush"><source src="assets/audio/my-voice-note-01.ogg" type="audio/ogg" /></audio><time>voice note 1 of 3</time></div>
+          </article>
+          <article class="memory-card memory-card--voice" data-category="voice">
+            <button class="memory-card__art memory-card__art--rose" type="button" data-memory-open data-kind="voice" data-src="assets/audio/hindi-lyrics-01.ogg" data-title="One of the funny ones" data-date="Saved from our little experiment" data-description="A voice note from the Hindi lyrics game." aria-label="Open voice note: One of the funny ones"><span aria-hidden="true">♡</span><small>AMMU’S VOICE</small></button>
+            <div class="memory-card__details"><p class="memory-card__type">VOICE NOTE · THE LYRICS GAME</p><h3>One of the funny ones</h3><audio controls preload="none" aria-label="Play Ammu’s Hindi lyrics voice note"><source src="assets/audio/hindi-lyrics-01.ogg" type="audio/ogg" /></audio><time>saved from our little experiment</time></div>
+          </article>
+          <article class="memory-card memory-card--video" data-category="video">
+            <button class="memory-card__video" type="button" data-memory-open data-kind="video" data-src="assets/media/ammus-song-cover.mp4" data-poster="assets/photos/ammu-black-white.jpeg" data-title="Can’t Help Falling in Love" data-date="Video · her song" data-description="The one I keep replaying." aria-label="Open video: Can’t Help Falling in Love"><img src="assets/photos/ammu-black-white.jpeg" alt="Ammu in a black and white portrait" /><span aria-hidden="true">▶</span></button>
+            <div class="memory-card__details"><p class="memory-card__type">VIDEO · HER SONG</p><h3>Can’t Help Falling in Love</h3><time>the one I keep replaying</time></div>
+          </article>
+          <article class="memory-card memory-card--note" data-category="little-things">
+            <button class="memory-card__note-art" type="button" data-memory-open data-kind="little-things" data-title="One tiny “Mhmmm”" data-date="August 1 · 12:01 AM" data-description="“You are my half girlfriend.” A tiny line from the start of us." aria-label="Open keepsake: One tiny Mhmmm"><span aria-hidden="true">✦</span><p>“You are my<br /><em>half girlfriend.</em>”</p><small>AUGUST 1 · 12:01 AM</small></button>
+            <div class="memory-card__details"><p class="memory-card__type">A LITTLE THING · FROM THE BEGINNING</p><h3>One tiny “Mhmmm”</h3><time>the start of us</time></div>
+          </article>
+        </div>
+        <p class="archive-endnote"><span aria-hidden="true">✦</span> our story, in all its little pieces <span aria-hidden="true">♡</span></p>
+        </div>
+      </section>
+
+      <dialog class="memory-viewer" id="memory-viewer" aria-label="Memory viewer">
+        <div class="memory-viewer__shell">
+          <button class="memory-viewer__close" type="button" data-viewer-close aria-label="Close memory">×</button>
+          <div class="memory-viewer__stage" id="memory-viewer-stage"></div>
+          <div class="memory-viewer__caption">
+            <p class="memory-viewer__type" id="memory-viewer-type"></p>
+            <h2 id="memory-viewer-title"></h2>
+            <time id="memory-viewer-date"></time>
+            <p id="memory-viewer-description"></p>
+          </div>
+          <nav class="memory-viewer__nav" aria-label="Browse memories">
+            <button type="button" data-viewer-step="-1">← <span>PREVIOUS</span></button>
+            <span id="memory-viewer-count" aria-live="polite"></span>
+            <button type="button" data-viewer-step="1"><span>NEXT</span> →</button>
+          </nav>
+        </div>
+      </dialog>
+    </main>
+    <footer class="archive-footer"><span>our little diary</span><span aria-hidden="true">✦</span><span>kept close, always</span></footer>
+  </body>
+</html>

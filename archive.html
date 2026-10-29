@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090d1c" />
+    <title>Our little diary · For Ammu</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="archive.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="diary-config.js" defer></script>
+    <script src="diary-client.js" defer></script>
+    <script src="archive-live.js" defer></script>
+  </head>
+  <body class="archive-preview-page">
+    <div class="sky-grain" aria-hidden="true"></div>
+    <header class="archive-header">
+      <a class="archive-wordmark" href="index.html"><span aria-hidden="true">☾</span> our little diary</a>
+      <a class="archive-back" href="index.html">back to Ammu’s universe <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="diary-welcome" aria-labelledby="diary-title">
+        <div class="diary-welcome__copy">
+          <p class="eyebrow"><span class="eyebrow__line"></span> a little place for all of us</p>
+          <h1 id="diary-title">Our little<br /><em>time capsule.</em></h1>
+          <p>Every photo, voice note, movie night, and tiny thing we never want to lose—kept together, close to the heart.</p>
+          <span class="diary-welcome__note">just for you and me <span aria-hidden="true">♡</span></span>
+          <form class="diary-auth" id="diary-auth-form">
+            <label for="diary-email">our private little doorway</label>
+            <div><input id="diary-email" type="email" autocomplete="email" required placeholder="your invited email" /><button type="submit">send sign-in link</button></div>
+            <p id="diary-auth-status" role="status">Sign in with one of the two invited email addresses.</p>
+          </form>
+        </div>
+        <div class="diary-book-stage">
+          <div class="diary-book" id="diary-book">
+            <div class="diary-book__pages" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <button class="diary-book__cover" id="open-diary" type="button" aria-controls="archive-content" aria-expanded="false">
+              <span class="diary-book__cover-star" aria-hidden="true">✦</span>
+              <span class="diary-book__cover-kicker">THE LITTLE BOOK OF</span>
+              <span class="diary-book__cover-title">us</span>
+              <span class="diary-book__cover-rule" aria-hidden="true"></span>
+              <span class="diary-book__cover-names">Ammu <i>♡</i> Ayush</span>
+              <span class="diary-book__cover-prompt">open our diary <b aria-hidden="true">→</b></span>
+            </button>
+          </div>
+          <p class="diary-book-stage__caption">a thousand little moments, all in one place</p>
+        </div>
+      </section>
+
+      <section class="archive-content" id="archive-content" hidden aria-labelledby="archive-title">
+        <div class="archive-spread">
+        <div class="archive-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow__line"></span> gathered with love</p>
+            <h2 id="archive-title">The things<br /><em>we keep.</em></h2>
+          </div>
+          <div class="archive-heading__actions"><button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button><a class="archive-upload-link" href="upload.html"><span aria-hidden="true">＋</span> add a memory</a></div>
+        </div>
+        <p class="diary-live-status" id="archive-status" role="status"></p>
+        <div class="archive-controls" role="group" aria-label="Filter memories">
+          <button class="archive-filter is-active" type="button" data-filter="all" aria-pressed="true">everything <span data-count="all">0</span></button>
+          <button class="archive-filter" type="button" data-filter="photo" aria-pressed="false">photos <span data-count="photo">0</span></button>
+          <button class="archive-filter" type="button" data-filter="video" aria-pressed="false">videos <span data-count="video">0</span></button>
+          <button class="archive-filter" type="button" data-filter="voice" aria-pressed="false">voice notes <span data-count="voice">0</span></button>
+          <button class="archive-filter" type="button" data-filter="little-things" aria-pressed="false">little things <span data-count="little-things">0</span></button>
+        </div>
+        <div class="memory-grid" id="memory-grid" aria-live="polite"></div>
+        <p class="archive-endnote"><span aria-hidden="true">✦</span> our story, in all its little pieces <span aria-hidden="true">♡</span></p>
+        </div>
+      </section>
+
+      <dialog class="memory-viewer" id="memory-viewer" aria-label="Memory viewer">
+        <div class="memory-viewer__shell">
+          <button class="memory-viewer__close" type="button" data-viewer-close aria-label="Close memory">×</button>
+          <div class="memory-viewer__stage" id="memory-viewer-stage"></div>
+          <div class="memory-viewer__caption">
+            <p class="memory-viewer__type" id="memory-viewer-type"></p>
+            <h2 id="memory-viewer-title"></h2>
+            <time id="memory-viewer-date"></time>
+            <p id="memory-viewer-description"></p>
+          </div>
+          <nav class="memory-viewer__nav" aria-label="Browse memories">
+            <button type="button" data-viewer-step="-1">← <span>PREVIOUS</span></button>
+            <span id="memory-viewer-count" aria-live="polite"></span>
+            <button type="button" data-viewer-step="1"><span>NEXT</span> →</button>
+          </nav>
+        </div>
+      </dialog>
+    </main>
+    <footer class="archive-footer"><span>our little diary</span><span aria-hidden="true">✦</span><span>kept close, always</span></footer>
+  </body>
+</html>
