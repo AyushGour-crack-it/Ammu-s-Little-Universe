@@ -176,6 +176,12 @@
     date.dateTime = value;
     date.textContent = prettyDate(value);
     details.append(kicker, title, date);
+    if (memory.location) {
+      const location = document.createElement('p');
+      location.className = 'memory-card__location';
+      location.textContent = `⌖ ${memory.location}`;
+      details.append(location);
+    }
     card.append(open, details);
     return card;
   };
@@ -303,6 +309,9 @@
     document.querySelector('#memory-viewer-type').textContent = labels[memoryIndexItem.media_type] || 'KEPT CLOSE';
     document.querySelector('#memory-viewer-title').textContent = memoryIndexItem.title || 'A little memory';
     document.querySelector('#memory-viewer-date').textContent = prettyDate(itemDate(memoryIndexItem));
+    const location = document.querySelector('#memory-viewer-location');
+    location.textContent = memoryIndexItem.location ? `⌖ ${memoryIndexItem.location}` : '';
+    location.hidden = !memoryIndexItem.location;
     document.querySelector('#memory-viewer-description').textContent = memoryIndexItem.media_type === 'little-things' ? '' : memoryIndexItem.caption || '';
     document.querySelector('#memory-viewer-count').textContent = `${currentIndex + 1} / ${visible.length}`;
     viewer.dataset.kind = memoryIndexItem.media_type;

@@ -11,6 +11,7 @@ create table if not exists public.memories (
   title text not null,
   media_type text not null check (media_type in ('photo', 'video', 'voice', 'little-things')),
   memory_date date,
+  location text,
   caption text not null default '',
   storage_path text not null unique,
   original_name text not null,

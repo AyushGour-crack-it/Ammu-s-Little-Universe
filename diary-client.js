@@ -10,6 +10,8 @@
   const client = configured
     ? window.supabase.createClient(config.supabaseUrl, config.publishableKey)
     : null;
+  let locationColumnAvailable = true;
+  const isMissingLocationColumn = (error) => /(?:column|schema cache).{0,80}\blocation\b|\blocation\b.{0,80}(?:column|schema cache|does not exist)/i.test(`${error?.message || ''} ${error?.details || ''}`);
 
   const requireConfigured = () => {
     if (!client) throw new Error('The private diary backend has not been connected yet. Follow backend/SETUP.md to finish setup.');
@@ -57,14 +59,18 @@
     const memories = [];
     for (let from = 0; ; from += pageSize) {
       const to = from + pageSize - 1;
-      const { data, error } = await supabaseClient
-        .from('memories')
-        .select('id,title,media_type,memory_date,caption,content_type,created_at')
+      const selectPage = () => supabaseClient.from('memories')
+        .select(locationColumnAvailable ? 'id,title,media_type,memory_date,location,caption,content_type,created_at' : 'id,title,media_type,memory_date,caption,content_type,created_at')
         .lte('created_at', snapshotAt)
         .order('memory_date', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .order('id', { ascending: false })
         .range(from, to);
+      let { data, error } = await selectPage();
+      if (error && locationColumnAvailable && isMissingLocationColumn(error)) {
+        locationColumnAvailable = false;
+        ({ data, error } = await selectPage());
+      }
       if (error) throw error;
       memories.push(...(data || []));
       if (!data || data.length < pageSize) break;
@@ -77,10 +83,14 @@
     const supabaseClient = requireConfigured();
     const session = await getMemberSession();
     if (!session) return [];
-    const { data, error } = await supabaseClient
-      .from('memories')
-      .select('id,title,media_type,memory_date,caption,storage_path,original_name,content_type,file_size,created_by,created_at')
+    const selectMemories = () => supabaseClient.from('memories')
+      .select(locationColumnAvailable ? 'id,title,media_type,memory_date,location,caption,storage_path,original_name,content_type,file_size,created_by,created_at' : 'id,title,media_type,memory_date,caption,storage_path,original_name,content_type,file_size,created_by,created_at')
       .in('id', ids);
+    let { data, error } = await selectMemories();
+    if (error && locationColumnAvailable && isMissingLocationColumn(error)) {
+      locationColumnAvailable = false;
+      ({ data, error } = await selectMemories());
+    }
     if (error) throw error;
     const withSignedUrls = await Promise.all((data || []).map(async (memory) => {
       const { data: signed, error: signedError } = await supabaseClient
