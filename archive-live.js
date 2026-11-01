@@ -2,13 +2,20 @@
   const authForm = document.querySelector('#diary-auth-form');
   const authStatus = document.querySelector('#diary-auth-status');
   const authEmail = document.querySelector('#diary-email');
-  const authPanel = document.querySelector('.diary-auth');
+  const authDialog = document.querySelector('#diary-auth-dialog');
   const archiveStatus = document.querySelector('#archive-status');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
   const archiveContent = document.querySelector('#archive-content');
   const openButton = document.querySelector('#open-diary');
+  const enterAlbumButton = document.querySelector('#enter-album');
+  const storyStatus = document.querySelector('#story-status');
+  const returnToStoryButton = document.querySelector('#return-to-story');
+  const mobileOpenChapterButton = document.querySelector('#mobile-open-chapter');
+  const mobileIndexBackButton = document.querySelector('#mobile-index-back');
   const book = document.querySelector('#diary-book');
   const grid = document.querySelector('#memory-grid');
   const chapterList = document.querySelector('#chapter-list');
+  const chapterPicker = document.querySelector('#chapter-picker');
   const chapterIndex = document.querySelector('.chapter-index');
   const spreadTitle = document.querySelector('#spread-title');
   const spreadCount = document.querySelector('#spread-count');
@@ -22,6 +29,7 @@
   const viewer = document.querySelector('#memory-viewer');
   const viewerStage = document.querySelector('#memory-viewer-stage');
   const signOutButton = document.querySelector('#diary-signout');
+  const pageSoundToggle = document.querySelector('#diary-page-sound');
   const uploaderLink = document.querySelector('#archive-upload-link');
   const counts = [...document.querySelectorAll('[data-count]')];
   const filters = [...document.querySelectorAll('[data-filter]')];
@@ -43,9 +51,70 @@
   let viewerRenderId = 0;
   let pageTurning = false;
   let bookOpening = false;
+  let mobileFlipTimer = null;
+  let pageSoundEnabled = false;
+  let pageAudioContext = null;
+
+  try { pageSoundEnabled = localStorage.getItem('diary-page-turn-sound') === 'on'; } catch (_) { /* Storage can be unavailable in private browsing. */ }
+  const updatePageSoundToggle = () => {
+    pageSoundToggle.textContent = pageSoundEnabled ? '♫ sound on' : '♫ sound off';
+    pageSoundToggle.setAttribute('aria-pressed', String(pageSoundEnabled));
+    pageSoundToggle.setAttribute('aria-label', `Page turn sound is ${pageSoundEnabled ? 'on' : 'off'}`);
+  };
+  const playPageTurnSound = () => {
+    if (!pageSoundEnabled) return;
+    const AudioContextType = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextType) return;
+    try {
+      pageAudioContext ||= new AudioContextType();
+      if (pageAudioContext.state === 'suspended') void pageAudioContext.resume();
+      const duration = .34;
+      const sampleCount = Math.floor(pageAudioContext.sampleRate * duration);
+      const buffer = pageAudioContext.createBuffer(1, sampleCount, pageAudioContext.sampleRate);
+      const samples = buffer.getChannelData(0);
+      for (let index = 0; index < sampleCount; index += 1) {
+        const time = index / pageAudioContext.sampleRate;
+        const fadeIn = Math.min(1, time / .025);
+        const fadeOut = Math.min(1, (duration - time) / .085);
+        const flutter = .62 + .38 * Math.sin(2 * Math.PI * (13 * time + 7 * time * time));
+        samples[index] = (Math.random() * 2 - 1) * fadeIn * fadeOut * flutter * .7;
+      }
+      const source = pageAudioContext.createBufferSource();
+      const highPass = pageAudioContext.createBiquadFilter();
+      const lowPass = pageAudioContext.createBiquadFilter();
+      const volume = pageAudioContext.createGain();
+      source.buffer = buffer;
+      highPass.type = 'highpass'; highPass.frequency.value = 260;
+      lowPass.type = 'lowpass'; lowPass.frequency.value = 3100;
+      volume.gain.value = .13;
+      source.connect(highPass).connect(lowPass).connect(volume).connect(pageAudioContext.destination);
+      source.start();
+    } catch (_) { /* Keep page turns working if audio is unavailable. */ }
+  };
+  updatePageSoundToggle();
+
+  function isMobileBook() {
+    return window.matchMedia('(max-width: 650px)').matches
+      || (window.matchMedia('(pointer: coarse)').matches && window.innerWidth <= 900 && window.innerHeight <= 500);
+  }
+  const setMobileBookPage = (page) => {
+    if (!isMobileBook()) return;
+    playPageTurnSound();
+    window.clearTimeout(mobileFlipTimer);
+    document.body.classList.toggle('is-mobile-index', page === 'index');
+    document.body.classList.toggle('is-mobile-memory-page', page === 'memories');
+    document.body.classList.remove('is-turning-to-index', 'is-turning-to-memories');
+    void document.body.offsetWidth;
+    document.body.classList.add(page === 'index' ? 'is-turning-to-index' : 'is-turning-to-memories');
+    mobileFlipTimer = window.setTimeout(() => document.body.classList.remove('is-turning-to-index', 'is-turning-to-memories'), 560);
+  };
 
   function getPageSize() {
-    return window.matchMedia('(max-width: 540px)').matches ? 4 : 6;
+    const width = window.innerWidth;
+    if (isMobileBook()) return 2;
+    if (width >= 1700) return 8;
+    if (width >= 1200) return 6;
+    return 4;
   }
 
   const say = (node, message, isError = false) => {
@@ -70,9 +139,24 @@
 
   const renderChapterIndex = () => {
     const months = [...new Set(memoryIndex.map(monthFor))].sort((a, b) => b.localeCompare(a));
-    chapterIndex.hidden = months.length < 2;
+    chapterIndex.hidden = months.length === 0;
     chapterList.replaceChildren();
-    months.forEach((month) => {
+    const featuredMonths = months.slice(0, 3);
+    if (activeMonth && !featuredMonths.includes(activeMonth) && months.length > 3) featuredMonths[2] = activeMonth;
+    const olderMonths = months.filter((month) => !featuredMonths.includes(month));
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = olderMonths.length ? 'choose another chapter' : 'all chapters shown';
+    chapterPicker.replaceChildren(placeholder);
+    olderMonths.forEach((month) => {
+      const option = document.createElement('option');
+      option.value = month;
+      option.textContent = `${monthTitle(month)} · ${memoryIndex.filter((memory) => monthFor(memory) === month).length}`;
+      chapterPicker.append(option);
+    });
+    chapterPicker.closest('.chapter-more').hidden = olderMonths.length === 0;
+    chapterPicker.value = olderMonths.includes(activeMonth) ? activeMonth : '';
+    featuredMonths.forEach((month) => {
       const items = memoryIndex.filter((memory) => monthFor(memory) === month);
       const button = document.createElement('button');
       button.type = 'button';
@@ -88,7 +172,7 @@
         if (month === activeMonth) return;
         activeMonth = month;
         activePage = 0;
-        renderSpread('next', true);
+        renderSpread('next');
       });
       chapterList.append(button);
     });
@@ -111,6 +195,7 @@
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));
     });
+    chapterPicker.value = [...chapterPicker.options].some((option) => option.value === activeMonth) ? activeMonth : '';
   };
 
   const createCard = (memory) => {
@@ -140,6 +225,7 @@
       video.preload = 'metadata';
       video.playsInline = true;
       open.append(video);
+      if (memory.preview_poster) video.poster = memory.preview_poster;
       const play = document.createElement('span');
       play.textContent = '▶';
       play.setAttribute('aria-hidden', 'true');
@@ -198,7 +284,7 @@
     emptyState.querySelector('p').textContent = message;
   };
 
-  const renderSpread = async (direction = null, scrollToTop = false) => {
+  const renderSpread = async (direction = null) => {
     const renderId = ++pageRenderId;
     pageSize = getPageSize();
     visible = filteredMemories();
@@ -220,12 +306,13 @@
     renderFilterCounts();
 
     if (direction) {
-      spreadStage.classList.remove('is-turning-next', 'is-turning-previous');
-      void spreadStage.offsetWidth;
-      spreadStage.classList.add(direction === 'previous' ? 'is-turning-previous' : 'is-turning-next');
-      spreadStage.addEventListener('animationend', () => spreadStage.classList.remove('is-turning-next', 'is-turning-previous'), { once: true });
+      playPageTurnSound();
+      const page = spreadStage.closest('.archive-page--memories') || spreadStage;
+      page.classList.remove('is-turning-next', 'is-turning-previous');
+      void page.offsetWidth;
+      page.classList.add(direction === 'previous' ? 'is-turning-previous' : 'is-turning-next');
+      page.addEventListener('animationend', () => page.classList.remove('is-turning-next', 'is-turning-previous'), { once: true });
     }
-    if (scrollToTop) spreadTitle.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 
     if (!pageEntries.length) {
       grid.replaceChildren();
@@ -479,42 +566,103 @@
 
   const turnSpread = (direction) => {
     if (pageTurning || loadingPage || loadingIndex) return;
+    if (isMobileBook() && document.body.classList.contains('is-mobile-index')) {
+      if (direction === 'next') setMobileBookPage('memories');
+      return;
+    }
     const lastPage = Math.max(0, Math.ceil(filteredMemories().length / getPageSize()) - 1);
     const nextPage = activePage + (direction === 'next' ? 1 : -1);
     if (nextPage < 0 || nextPage > lastPage) return;
     pageTurning = true;
     activePage = nextPage;
-    void renderSpread(direction, true).finally(() => window.setTimeout(() => { pageTurning = false; }, 430));
+    void renderSpread(direction).finally(() => window.setTimeout(() => { pageTurning = false; }, 560));
   };
 
   const openArchive = async (knownSession = null) => {
     if (bookOpening) return;
     bookOpening = true;
     try {
-      session = knownSession || await window.DiaryClient.getMemberSession();
-      if (!session) {
-        authPanel.classList.add('is-visible');
-        say(authStatus, 'Sign in first, and then the diary will open for you.');
-        authEmail.focus();
-        return;
-      }
-      authPanel.hidden = true;
-      signOutButton.hidden = false;
+      // The illustrated story page is public and should turn open immediately.
+      // Network/auth latency must not block the book animation; the private
+      // album checks the session when the reader turns to their memories.
       book.classList.add('is-opening');
       openButton.setAttribute('aria-expanded', 'true');
-      archiveContent.hidden = false;
-      if (!indexLoaded) await refreshArchive();
-      else await renderSpread();
-      archiveContent.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      document.body.classList.add('is-story-open');
+      enterAlbumButton.hidden = false;
+      say(storyStatus, 'Our story began here. Turn the page when you’re ready.');
+      session = knownSession || session;
+      if (!knownSession && !session) {
+        void window.DiaryClient.getMemberSession().then((currentSession) => {
+          if (!currentSession) return;
+          session = currentSession;
+          signOutButton.hidden = false;
+        }).catch(() => { /* Keep the story page available if session lookup is offline. */ });
+      }
     } catch (error) {
-      say(authStatus, error.message || 'Could not open the diary. Please try again.', true);
+      // A memory list failure should not prevent the illustrated first page.
+      enterAlbumButton.hidden = false;
+      say(storyStatus, 'Our story began here. Turn the page when you’re ready.');
+      say(archiveStatus, error.message || 'The memories could not load just now. Refresh the diary to try again.', true);
     } finally {
       bookOpening = false;
     }
   };
 
+  const enterAlbum = async () => {
+    if (bookOpening) return;
+    bookOpening = true;
+    try {
+      if (!session) session = await window.DiaryClient.getMemberSession();
+      if (!session) {
+        say(authStatus, 'Sign in to open your private memories.');
+        if (!authDialog.open) authDialog.showModal();
+        window.setTimeout(() => authEmail.focus(), 80);
+        return;
+      }
+      if (authDialog.open) authDialog.close();
+      signOutButton.hidden = false;
+      if (!indexLoaded) await refreshArchive();
+      archiveContent.hidden = false;
+      document.body.classList.remove('is-story-open');
+      document.body.classList.add('is-album-open');
+      document.documentElement.classList.add('is-album-open');
+      themeColor.setAttribute('content', '#e9decd');
+      if (isMobileBook()) setMobileBookPage('index');
+      if (location.hash !== '#archive-content') history.replaceState(null, '', '#archive-content');
+      archiveContent.querySelector('#archive-title').focus({ preventScroll: true });
+    } catch (error) {
+      say(authStatus, error.message || 'Could not open the private diary. Please try again.', true);
+      if (!authDialog.open) authDialog.showModal();
+    } finally {
+      bookOpening = false;
+    }
+  };
+
+  const returnToStory = () => {
+    archiveContent.hidden = true;
+    document.body.classList.remove('is-album-open');
+    document.documentElement.classList.remove('is-album-open');
+    document.body.classList.remove('is-mobile-index', 'is-mobile-memory-page');
+    document.body.classList.add('is-story-open');
+    themeColor.setAttribute('content', '#090d1c');
+    if (location.hash) history.replaceState(null, '', `${location.pathname}${location.search}`);
+    enterAlbumButton.focus({ preventScroll: true });
+  };
+
   if (!window.DiaryClient.configured) say(authStatus, 'Add the Supabase project URL and publishable key to diary-config.js to connect the private diary.', true);
   openButton.addEventListener('click', () => { void openArchive(); });
+  enterAlbumButton.addEventListener('click', () => { void enterAlbum(); });
+  mobileOpenChapterButton.addEventListener('click', () => {
+    setMobileBookPage('memories');
+    spreadTitle.focus({ preventScroll: true });
+  });
+  mobileIndexBackButton.addEventListener('click', () => {
+    setMobileBookPage('index');
+    document.querySelector('#archive-title').focus({ preventScroll: true });
+  });
+  returnToStoryButton.addEventListener('click', returnToStory);
+  authDialog.querySelector('[data-auth-close]').addEventListener('click', () => authDialog.close());
+  authDialog.addEventListener('click', (event) => { if (event.target === authDialog) authDialog.close(); });
   authForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!window.DiaryClient.configured) return say(authStatus, 'Connect Supabase using backend/SETUP.md before signing in.', true);
@@ -531,9 +679,27 @@
     activePage = 0;
     void renderSpread('next');
   }));
+  chapterPicker.addEventListener('change', () => {
+    if (!chapterPicker.value || chapterPicker.value === activeMonth) return;
+    activeMonth = chapterPicker.value;
+    activePage = 0;
+    renderChapterIndex();
+    renderSpread('next');
+  });
   previousButton.addEventListener('click', () => turnSpread('previous'));
   nextButton.addEventListener('click', () => turnSpread('next'));
   refreshButton.addEventListener('click', () => { void refreshArchive(); });
+  pageSoundToggle.addEventListener('click', () => {
+    pageSoundEnabled = !pageSoundEnabled;
+    try { localStorage.setItem('diary-page-turn-sound', pageSoundEnabled ? 'on' : 'off'); } catch (_) { /* Sound remains enabled for this visit. */ }
+    updatePageSoundToggle();
+    if (pageSoundEnabled) {
+      const AudioContextType = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextType) {
+        try { pageAudioContext ||= new AudioContextType(); void pageAudioContext.resume(); } catch (_) { /* The visual page turn remains available. */ }
+      }
+    }
+  });
   grid.addEventListener('click', (event) => {
     const retry = event.target.closest('[data-retry-spread]');
     if (retry) { void renderSpread(); return; }
@@ -551,6 +717,23 @@
   viewer.querySelectorAll('[data-viewer-step]').forEach((button) => button.addEventListener('click', () => {
     if (visible.length) void openMemory(currentIndex + Number(button.dataset.viewerStep));
   }));
+  let viewerTouchStart = null;
+  viewerStage.addEventListener('touchstart', (event) => {
+    if (!viewer.open || event.target.closest('button,input,audio,video,select')) return;
+    const touch = event.changedTouches[0];
+    viewerTouchStart = { x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  viewerStage.addEventListener('touchend', (event) => {
+    if (!viewerTouchStart) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - viewerTouchStart.x;
+    const deltaY = touch.clientY - viewerTouchStart.y;
+    viewerTouchStart = null;
+    if (visible.length && Math.abs(deltaX) > 64 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
+      void openMemory(currentIndex + (deltaX < 0 ? 1 : -1));
+    }
+  }, { passive: true });
+  viewerStage.addEventListener('touchcancel', () => { viewerTouchStart = null; }, { passive: true });
   signOutButton.addEventListener('click', async () => { await window.DiaryClient.signOut(); location.reload(); });
 
   const uploaderUrl = window.DIARY_CONFIG?.uploaderUrl?.trim();
@@ -582,6 +765,21 @@
     if (Math.abs(deltaX) > 58 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) turnSpread(deltaX < 0 ? 'next' : 'previous');
   }, { passive: true });
   spreadStage.addEventListener('touchcancel', () => { touchStart = null; }, { passive: true });
+  let mobileIndexTouchStart = null;
+  document.querySelector('#archive-book-spread').addEventListener('touchstart', (event) => {
+    if (!isMobileBook() || !document.body.classList.contains('is-mobile-index') || event.target.closest('button,a,select')) return;
+    const touch = event.changedTouches[0];
+    mobileIndexTouchStart = { x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  document.querySelector('#archive-book-spread').addEventListener('touchend', (event) => {
+    if (!mobileIndexTouchStart) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - mobileIndexTouchStart.x;
+    const deltaY = touch.clientY - mobileIndexTouchStart.y;
+    mobileIndexTouchStart = null;
+    if (deltaX < -58 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) setMobileBookPage('memories');
+  }, { passive: true });
+  document.querySelector('#archive-book-spread').addEventListener('touchcancel', () => { mobileIndexTouchStart = null; }, { passive: true });
   document.addEventListener('keydown', (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
     if (viewer.open) {
@@ -597,13 +795,14 @@
     const nextSize = getPageSize();
     if (nextSize !== pageSize && indexLoaded && !viewer.open) { pageSize = nextSize; activePage = 0; void renderSpread(); }
   }, { passive: true });
-  if (location.hash === '#archive-content' && window.DiaryClient.configured) void openArchive();
-  else if (window.DiaryClient.configured) {
+  if (window.DiaryClient.configured) {
     window.DiaryClient.getMemberSession().then((currentSession) => {
       if (!currentSession) return;
-      authPanel.hidden = true;
+      session = currentSession;
       signOutButton.hidden = false;
-      void openArchive(currentSession);
+      if (location.hash === '#archive-content') {
+        void openArchive(currentSession).then(() => enterAlbum());
+      }
     }).catch((error) => say(authStatus, error.message || 'This account cannot access the diary.', true));
   }
 })();
