@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "For Ammu, under the same sky",
+  "short_name": "For Ammu",
+  "description": "A little universe made with love for Ammu.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#090d1c",
+  "theme_color": "#090d1c",
+  "orientation": "any",
+  "categories": ["lifestyle"],
+  "icons": [
+    { "src": "/assets/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/app-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

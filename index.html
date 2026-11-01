@@ -4,13 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#090d1c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="For Ammu" />
     <meta
       name="description"
       content="A little birthday universe made for Ammu."
     />
     <title>For Ammu, under the same sky</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/assets/app-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
+    <script src="pwa.js" defer></script>
   </head>
   <body>
     <div class="sky-grain" aria-hidden="true"></div>
@@ -40,6 +47,9 @@
         <a href="archive.html">Our diary</a>
       </nav>
       <a class="header-link" href="#letter"><span aria-hidden="true">✦</span> for Ammu</a>
+      <button class="pwa-install-button" id="pwa-install-button" type="button" aria-label="Save Ammu’s little universe as an app">
+        <span class="pwa-install-button__icon" aria-hidden="true">↓</span><span class="pwa-install-button__label">save app</span>
+      </button>
       <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
@@ -337,6 +347,15 @@
       </section>
     </main>
 
+    <dialog class="pwa-install-dialog" id="pwa-install-guide" aria-labelledby="pwa-install-title">
+      <div class="pwa-install-dialog__card">
+        <button class="pwa-install-dialog__close" type="button" data-pwa-close aria-label="Close install guide">×</button>
+        <p class="eyebrow"><span class="eyebrow__line"></span> a little app for us</p>
+        <h2 id="pwa-install-title">Keep our little universe close.</h2>
+        <p class="pwa-install-dialog__instructions" id="pwa-install-instructions">Use your browser’s install option to add this site to your home screen.</p>
+        <p class="pwa-install-dialog__note">After one online visit, the story and its photos can open offline. The private diary and audio/video memories need an internet connection.</p>
+      </div>
+    </dialog>
     <footer class="site-footer"><span>made just for Ammu</span><span aria-hidden="true">✦</span><span>with all my love</span></footer>
   </body>
 </html>

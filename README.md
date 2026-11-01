@@ -12,6 +12,12 @@ A responsive birthday website and private shared diary for Ammu. The site uses p
 - `archive-preview.html` and `upload-preview.html` are visual previews with sample content. They do not save or upload files.
 - `preview.html` is an earlier visual preview of the main site.
 
+## Install the main site as an app
+
+The main site is a progressive web app. On Android or desktop, use **save app** in the header or the browser's install option. On iPhone or iPad, open the site in Safari, tap **Share**, choose **Add to Home Screen**, then tap **Add**. The installed app opens in its own window and includes the diary link.
+
+After the first online visit, the main story, styles, script, and photo artwork can reopen offline. Private diary sign-in and cloud memories, plus the audio and video recordings, need an internet connection. The service worker does not cache Supabase responses or private memory files.
+
 To preview locally, open `index.html`, `archive-preview.html`, or `upload-preview.html` in a browser. The production diary and uploader require the backend setup below.
 
 ## Connect private uploads
