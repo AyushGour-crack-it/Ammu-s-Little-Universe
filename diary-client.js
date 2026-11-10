@@ -75,7 +75,31 @@
       memories.push(...(data || []));
       if (!data || data.length < pageSize) break;
     }
-    return memories;
+    const favoriteIds = new Set();
+    for (let from = 0; ; from += pageSize) {
+      const { data: favorites, error: favoritesError } = await supabaseClient
+        .from('memory_favorites')
+        .select('memory_id')
+        .order('memory_id')
+        .range(from, from + pageSize - 1);
+      if (favoritesError) throw favoritesError;
+      (favorites || []).forEach((favorite) => favoriteIds.add(favorite.memory_id));
+      if (!favorites || favorites.length < pageSize) break;
+    }
+    return memories.map((memory) => ({ ...memory, is_favorite: favoriteIds.has(memory.id) }));
+  };
+
+  const setMemoryFavorite = async (memoryId, isFavorite) => {
+    const supabaseClient = requireConfigured();
+    const session = await getMemberSession();
+    if (!session) throw new Error('Sign in to save a favorite.');
+    const result = isFavorite
+      ? await supabaseClient.from('memory_favorites').upsert(
+        { memory_id: memoryId, created_by: session.user.id },
+        { onConflict: 'memory_id', ignoreDuplicates: true },
+      )
+      : await supabaseClient.from('memory_favorites').delete().eq('memory_id', memoryId);
+    if (result.error) throw result.error;
   };
 
   const getMemoriesByIds = async (ids) => {
@@ -159,6 +183,7 @@
       if (error) throw error;
     },
     listMemoryIndex,
+    setMemoryFavorite,
     getMemoriesByIds,
     getMemoryById,
     uploadMemory,

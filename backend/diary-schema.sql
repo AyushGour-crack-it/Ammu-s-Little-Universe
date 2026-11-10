@@ -21,11 +21,18 @@ create table if not exists public.memories (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.memory_favorites (
+  memory_id uuid primary key references public.memories (id) on delete cascade,
+  created_by uuid not null references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists memories_diary_order_idx
   on public.memories (memory_date desc nulls last, created_at desc, id desc);
 
 alter table public.diary_members enable row level security;
 alter table public.memories enable row level security;
+alter table public.memory_favorites enable row level security;
 
 create or replace function public.is_diary_member()
 returns boolean
@@ -70,8 +77,24 @@ create policy "Diary members can remove memories"
   on public.memories for delete to authenticated
   using (public.is_diary_member());
 
+drop policy if exists "Diary members can read shared favorites" on public.memory_favorites;
+create policy "Diary members can read shared favorites"
+  on public.memory_favorites for select to authenticated
+  using (public.is_diary_member());
+
+drop policy if exists "Diary members can add shared favorites" on public.memory_favorites;
+create policy "Diary members can add shared favorites"
+  on public.memory_favorites for insert to authenticated
+  with check (public.is_diary_member() and created_by = (select auth.uid()));
+
+drop policy if exists "Diary members can remove shared favorites" on public.memory_favorites;
+create policy "Diary members can remove shared favorites"
+  on public.memory_favorites for delete to authenticated
+  using (public.is_diary_member());
+
 grant select on public.diary_members to authenticated;
 grant select, insert, update, delete on public.memories to authenticated;
+grant select, insert, delete on public.memory_favorites to authenticated;
 
 insert into storage.buckets (
   id,

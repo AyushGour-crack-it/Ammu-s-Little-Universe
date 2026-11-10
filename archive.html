@@ -78,9 +78,11 @@
               <button class="archive-filter" type="button" data-filter="video" aria-pressed="false">videos <span data-count="video">0</span></button>
               <button class="archive-filter" type="button" data-filter="voice" aria-pressed="false">voice notes <span data-count="voice">0</span></button>
               <button class="archive-filter" type="button" data-filter="little-things" aria-pressed="false">little things <span data-count="little-things">0</span></button>
+              <button class="archive-filter" type="button" data-filter="favorites" aria-pressed="false">our favorites <span data-count="favorites">0</span></button>
             </div>
             <div class="archive-heading__actions">
               <button class="archive-return" id="return-to-story" type="button">← inside cover</button>
+              <button class="archive-read-mode" id="read-as-book" type="button" aria-pressed="false"><span aria-hidden="true">▤</span> read as a book</button>
               <button class="archive-refresh" id="archive-refresh" type="button" aria-label="Refresh diary memories" title="Refresh diary memories">↻</button>
               <button class="diary-page-sound" id="diary-page-sound" type="button" aria-pressed="false" aria-label="Page turn sound is off">♫ sound off</button>
               <button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button>
@@ -88,10 +90,22 @@
             </div>
             <button class="mobile-open-chapter" id="mobile-open-chapter" type="button">open this chapter <span aria-hidden="true">→</span></button>
             <p class="archive-index-note" aria-hidden="true">a little place for everything we keep <span>♡</span></p>
+            <section class="book-reading-page" id="book-reading-page" hidden aria-label="Book reading mode">
+              <p class="eyebrow"><span class="eyebrow__line"></span> just the two of us</p>
+              <h2>From Ghaziabad <em>to Chennai.</em></h2>
+              <p class="book-reading-page__copy">Every little moment, gathered into one book. Turn the pages from today back to where our story began.</p>
+              <div class="book-reading-page__route" aria-hidden="true"><span>GZB</span><i>······♡······</i><span>MAA</span></div>
+              <p class="book-reading-page__count"><strong id="reading-memory-count">0</strong> little moments kept close</p>
+              <button class="book-reading-page__exit" id="exit-book-reading" type="button">← return to the diary shelf</button>
+            </section>
           </section>
 
           <section class="archive-page archive-page--memories" aria-label="Selected chapter memories">
             <button class="mobile-index-back" id="mobile-index-back" type="button">← chapter index</button>
+            <div class="reading-mode-toolbar" id="reading-mode-toolbar" hidden>
+              <span>our little book · newest to oldest</span>
+              <button id="exit-book-reading-mobile" type="button">close book ×</button>
+            </div>
             <div class="spread-heading"><div><p class="spread-heading__eyebrow">A PAGE FROM OUR STORY</p><h3 id="spread-title" tabindex="-1">Your diary</h3></div><p class="spread-heading__count" id="spread-count" aria-live="polite"></p></div>
             <div class="spread-turn-stage" id="spread-turn-stage" aria-live="polite">
               <div class="archive-margin-doodle" aria-hidden="true"><svg viewBox="0 0 520 42"><path d="M38 26 C100 8 138 37 196 23 S300 14 344 25 S426 36 482 23"/><path d="M9 28 L9 14 L16 19 Q24 11 32 19 L39 14 L39 28 Q38 37 24 37 Q10 36 9 28Z"/><circle cx="19" cy="26" r="1"/><circle cx="29" cy="26" r="1"/><path d="M22 30 Q24 32 26 30 M245 17 C238 11 231 18 245 31 C259 18 252 11 245 17Z M482 24 Q475 19 478 14 Q481 10 485 16 Q489 10 493 14 Q496 19 489 24 L485 28Z M132 9 l2 4 4 1-4 2-2 4-2-4-4-2 4-1Z M393 8 l2 4 4 1-4 2-2 4-2-4-4-2 4-1Z"/></svg></div>
@@ -130,6 +144,7 @@
             <h2 id="memory-viewer-title"></h2>
             <time id="memory-viewer-date"></time>
             <p class="memory-viewer__location" id="memory-viewer-location" hidden></p>
+            <button class="memory-viewer__favorite" id="memory-viewer-favorite" type="button" aria-pressed="false">♡ save to our favorites</button>
             <p id="memory-viewer-description"></p>
           </div>
           <nav class="memory-viewer__nav" aria-label="Browse memories">

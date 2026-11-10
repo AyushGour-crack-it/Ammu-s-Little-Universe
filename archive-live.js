@@ -12,6 +12,12 @@
   const returnToStoryButton = document.querySelector('#return-to-story');
   const mobileOpenChapterButton = document.querySelector('#mobile-open-chapter');
   const mobileIndexBackButton = document.querySelector('#mobile-index-back');
+  const readAsBookButton = document.querySelector('#read-as-book');
+  const readingPage = document.querySelector('#book-reading-page');
+  const readingMemoryCount = document.querySelector('#reading-memory-count');
+  const exitReadingButton = document.querySelector('#exit-book-reading');
+  const exitReadingMobileButton = document.querySelector('#exit-book-reading-mobile');
+  const readingToolbar = document.querySelector('#reading-mode-toolbar');
   const book = document.querySelector('#diary-book');
   const grid = document.querySelector('#memory-grid');
   const chapterList = document.querySelector('#chapter-list');
@@ -28,19 +34,22 @@
   const emptyUploadLink = document.querySelector('#empty-upload-link');
   const viewer = document.querySelector('#memory-viewer');
   const viewerStage = document.querySelector('#memory-viewer-stage');
+  const viewerFavoriteButton = document.querySelector('#memory-viewer-favorite');
   const signOutButton = document.querySelector('#diary-signout');
   const pageSoundToggle = document.querySelector('#diary-page-sound');
   const uploaderLink = document.querySelector('#archive-upload-link');
   const counts = [...document.querySelectorAll('[data-count]')];
   const filters = [...document.querySelectorAll('[data-filter]')];
   const labels = { photo: 'PHOTO KEEPSAKE', video: 'A LITTLE FILM', voice: 'VOICE NOTE', 'little-things': 'A LITTLE THING' };
-  const filterNames = { photo: 'photos', video: 'videos', voice: 'voice notes', 'little-things': 'little things' };
+  const filterNames = { photo: 'photos', video: 'videos', voice: 'voice notes', 'little-things': 'little things', favorites: 'favorites' };
 
   let memoryIndex = [];
   let visible = [];
   let activeFilter = 'all';
   let activeMonth = null;
   let activePage = 0;
+  let readingMode = false;
+  let readingReturnState = null;
   let pageSize = getPageSize();
   let currentIndex = 0;
   let session = null;
@@ -110,6 +119,7 @@
   };
 
   function getPageSize() {
+    if (readingMode) return isMobileBook() ? 1 : 4;
     const width = window.innerWidth;
     if (isMobileBook()) return 2;
     if (width >= 1700) return 8;
@@ -135,7 +145,11 @@
   };
   const kindOf = (memory) => memory.media_type === 'little-things' ? 'little-things' : memory.media_type;
   const currentChapter = () => memoryIndex.filter((memory) => monthFor(memory) === activeMonth);
-  const filteredMemories = () => currentChapter().filter((memory) => activeFilter === 'all' || memory.media_type === activeFilter);
+  const filteredMemories = () => {
+    if (readingMode) return memoryIndex;
+    return currentChapter().filter((memory) => activeFilter === 'all'
+      || (activeFilter === 'favorites' ? memory.is_favorite : memory.media_type === activeFilter));
+  };
 
   const renderChapterIndex = () => {
     const months = [...new Set(memoryIndex.map(monthFor))].sort((a, b) => b.localeCompare(a));
@@ -179,10 +193,12 @@
   };
 
   const renderFilterCounts = () => {
-    const items = currentChapter();
+    const items = readingMode ? memoryIndex : currentChapter();
     counts.forEach((node) => {
       const kind = node.dataset.count;
-      const count = kind === 'all' ? items.length : items.filter((memory) => memory.media_type === kind).length;
+      const count = kind === 'all' ? items.length : kind === 'favorites'
+        ? items.filter((memory) => memory.is_favorite).length
+        : items.filter((memory) => memory.media_type === kind).length;
       node.textContent = String(count).padStart(2, '0');
     });
     filters.forEach((button) => {
@@ -201,7 +217,7 @@
   const createCard = (memory) => {
     const type = kindOf(memory);
     const card = document.createElement('article');
-    card.className = `memory-card memory-card--${type === 'little-things' ? 'note' : type}`;
+    card.className = `memory-card memory-card--${type === 'little-things' ? 'note' : type}${memory.is_favorite ? ' is-favorite' : ''}`;
     card.dataset.category = type;
     const open = document.createElement('button');
     open.type = 'button';
@@ -268,7 +284,97 @@
       location.textContent = `⌖ ${memory.location}`;
       details.append(location);
     }
-    card.append(open, details);
+    const favorite = document.createElement('button');
+    favorite.type = 'button';
+    favorite.className = 'memory-card__favorite';
+    favorite.dataset.favoriteId = memory.id;
+    favorite.setAttribute('aria-pressed', String(Boolean(memory.is_favorite)));
+    favorite.setAttribute('aria-label', memory.is_favorite ? `Remove ${memory.title} from our favorites` : `Save ${memory.title} to our favorites`);
+    favorite.textContent = memory.is_favorite ? '♥' : '♡';
+
+    const peek = document.createElement('div');
+    peek.className = `memory-card__peek memory-card__peek--${type}`;
+    peek.setAttribute('aria-hidden', 'true');
+    const peekMedia = document.createElement('div');
+    peekMedia.className = 'memory-card__peek-media';
+    const peekCopy = document.createElement('p');
+    peekCopy.className = 'memory-card__peek-copy';
+    if (type === 'photo' && memory.signed_url) {
+      const image = document.createElement('img'); image.src = memory.signed_url; image.alt = '';
+      peekMedia.append(image);
+      peekCopy.textContent = memory.caption || memory.title;
+    } else if (type === 'video') {
+      const video = document.createElement('video'); video.src = memory.signed_url || ''; video.muted = true; video.playsInline = true; video.preload = 'metadata';
+      if (memory.preview_poster) video.poster = memory.preview_poster;
+      peekMedia.append(video);
+      peekCopy.textContent = memory.caption || 'A little film, saved close.';
+    } else if (type === 'voice') {
+      const icon = document.createElement('span'); icon.textContent = '♫'; icon.setAttribute('aria-hidden', 'true');
+      peekMedia.append(icon);
+      peekCopy.textContent = memory.caption || 'A voice note, saved close. Tap the card to listen.';
+    } else {
+      const envelope = document.createElement('span'); envelope.className = 'memory-card__peek-envelope'; envelope.textContent = '♡'; envelope.setAttribute('aria-hidden', 'true');
+      peekMedia.append(envelope);
+      peekCopy.textContent = memory.caption || 'Hold this little letter to read a few lines…';
+    }
+    const peekMeta = document.createElement('small');
+    peekMeta.textContent = `${prettyDate(itemDate(memory))}${memory.location ? ` · ${memory.location}` : ''}`;
+    peek.append(peekMedia, peekCopy, peekMeta);
+
+    let peekLoaded = type !== 'little-things' || Boolean(memory.caption);
+    const showPeek = () => {
+      card.classList.add('is-peeking');
+      peek.setAttribute('aria-hidden', 'false');
+      if (!peekLoaded && memory.content_type === 'text/plain' && memory.signed_url) {
+        peekLoaded = true;
+        window.DiaryClient.getMemoryById(memory.id).then((freshMemory) => {
+          if (!freshMemory?.signed_url) return;
+          return fetch(freshMemory.signed_url).then((response) => response.ok ? response.text() : '').then((text) => {
+            if (text && card.isConnected) peekCopy.textContent = text.trim().slice(0, 900);
+          });
+        }).catch(() => { /* The card remains openable if the quick preview cannot load. */ });
+      }
+    };
+    const hidePeek = () => { card.classList.remove('is-peeking'); peek.setAttribute('aria-hidden', 'true'); };
+    let holdTimer = 0;
+    let pointerStart = null;
+    let heldPeek = false;
+    let suppressOpenClick = false;
+    card.addEventListener('pointerenter', (event) => { if (event.pointerType === 'mouse') showPeek(); });
+    card.addEventListener('pointerleave', (event) => { if (event.pointerType === 'mouse') hidePeek(); });
+    open.addEventListener('focus', showPeek);
+    open.addEventListener('blur', hidePeek);
+    card.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+      if (event.target.closest('.memory-card__favorite')) return;
+      pointerStart = { x: event.clientX, y: event.clientY };
+      heldPeek = false;
+      holdTimer = window.setTimeout(() => { heldPeek = true; suppressOpenClick = true; showPeek(); }, 460);
+    });
+    card.addEventListener('pointermove', (event) => {
+      if (!pointerStart) return;
+      if (Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) > 12) {
+        window.clearTimeout(holdTimer);
+        pointerStart = null;
+        if (heldPeek) hidePeek();
+        heldPeek = false;
+      }
+    });
+    card.addEventListener('pointerup', () => {
+      window.clearTimeout(holdTimer);
+      pointerStart = null;
+      if (heldPeek) hidePeek();
+    });
+    card.addEventListener('pointercancel', () => {
+      window.clearTimeout(holdTimer); pointerStart = null; heldPeek = false; hidePeek();
+    });
+    open.addEventListener('click', (event) => {
+      if (!suppressOpenClick) return;
+      event.preventDefault(); event.stopPropagation(); suppressOpenClick = false;
+    });
+    open.addEventListener('contextmenu', (event) => event.preventDefault());
+
+    card.append(open, details, favorite, peek);
     return card;
   };
 
@@ -293,7 +399,9 @@
     const first = activePage * pageSize;
     const pageEntries = visible.slice(first, first + pageSize);
 
-    spreadTitle.textContent = activeMonth ? monthTitle(activeMonth) : 'Our little diary';
+    spreadTitle.textContent = readingMode ? 'Our little story' : activeMonth ? monthTitle(activeMonth) : 'Our little diary';
+    readingMemoryCount.textContent = String(memoryIndex.length);
+    readAsBookButton.hidden = memoryIndex.length === 0;
     spreadCount.textContent = visible.length
       ? `${first + 1}–${first + pageEntries.length} of ${visible.length} ${visible.length === 1 ? 'memory' : 'memories'}`
       : memoryIndex.length ? `no ${filterNames[activeFilter] || 'memories'} in this chapter` : 'your first pages are waiting';
@@ -334,7 +442,11 @@
       const pageMemories = await window.DiaryClient.getMemoriesByIds(pageEntries.map((memory) => memory.id));
       if (renderId !== pageRenderId) return;
       if (pageMemories.length !== pageEntries.length) throw new Error('A few memories changed while this page was opening. Refresh the diary to see the latest pages.');
-      grid.replaceChildren(...pageMemories.map(createCard));
+      const cards = pageMemories.map((memory) => ({
+        ...memory,
+        is_favorite: Boolean(memoryIndex.find((entry) => entry.id === memory.id)?.is_favorite),
+      }));
+      grid.replaceChildren(...cards.map(createCard));
       const shownStart = first + 1;
       const shownEnd = first + pageMemories.length;
       say(archiveStatus, `${memoryIndex.length} ${memoryIndex.length === 1 ? 'memory' : 'memories'} tucked into our diary · showing ${shownStart}–${shownEnd} in this chapter.`);
@@ -399,6 +511,9 @@
     const location = document.querySelector('#memory-viewer-location');
     location.textContent = memoryIndexItem.location ? `⌖ ${memoryIndexItem.location}` : '';
     location.hidden = !memoryIndexItem.location;
+    viewerFavoriteButton.dataset.favoriteId = memoryIndexItem.id;
+    viewerFavoriteButton.setAttribute('aria-pressed', String(Boolean(memoryIndexItem.is_favorite)));
+    viewerFavoriteButton.textContent = memoryIndexItem.is_favorite ? '♥ saved in our favorites' : '♡ save to our favorites';
     document.querySelector('#memory-viewer-description').textContent = memoryIndexItem.media_type === 'little-things' ? '' : memoryIndexItem.caption || '';
     document.querySelector('#memory-viewer-count').textContent = `${currentIndex + 1} / ${visible.length}`;
     viewer.dataset.kind = memoryIndexItem.media_type;
@@ -564,6 +679,66 @@
     }
   };
 
+  const setFavorite = async (memoryId, button) => {
+    const memory = memoryIndex.find((entry) => entry.id === memoryId);
+    if (!memory || button?.disabled) return;
+    const nextValue = !memory.is_favorite;
+    if (button) button.disabled = true;
+    try {
+      await window.DiaryClient.setMemoryFavorite(memoryId, nextValue);
+      memory.is_favorite = nextValue;
+      if (viewerFavoriteButton.dataset.favoriteId === memoryId) {
+        viewerFavoriteButton.setAttribute('aria-pressed', String(nextValue));
+        viewerFavoriteButton.textContent = nextValue ? '♥ saved in our favorites' : '♡ save to our favorites';
+      }
+      say(archiveStatus, nextValue ? 'Tucked into our shared favorites.' : 'Removed from our shared favorites.');
+      if (viewer.open && activeFilter === 'favorites' && !nextValue && !readingMode) viewer.close();
+      await renderSpread();
+    } catch (error) {
+      say(archiveStatus, error.message || 'That favorite could not be saved just now. Try again.', true);
+    } finally {
+      if (button?.isConnected) button.disabled = false;
+    }
+  };
+
+  const enterReadingMode = () => {
+    if (!indexLoaded || loadingIndex || readingMode) return;
+    readingReturnState = { activeMonth, activeFilter, activePage };
+    readingMode = true;
+    activeMonth = null;
+    activeFilter = 'all';
+    activePage = 0;
+    archiveContent.classList.add('is-reading-mode');
+    document.body.classList.add('is-reading-mode');
+    readingPage.hidden = false;
+    readingToolbar.hidden = false;
+    readAsBookButton.setAttribute('aria-pressed', 'true');
+    if (isMobileBook()) setMobileBookPage('memories');
+    void renderSpread('next');
+    if (isMobileBook()) spreadTitle.focus({ preventScroll: true });
+    else exitReadingButton.focus({ preventScroll: true });
+  };
+
+  const exitReadingMode = () => {
+    if (!readingMode) return;
+    readingMode = false;
+    archiveContent.classList.remove('is-reading-mode');
+    document.body.classList.remove('is-reading-mode');
+    readingPage.hidden = true;
+    readingToolbar.hidden = true;
+    readAsBookButton.setAttribute('aria-pressed', 'false');
+    if (isMobileBook()) setMobileBookPage('index');
+    if (readingReturnState) {
+      activeMonth = readingReturnState.activeMonth;
+      activeFilter = readingReturnState.activeFilter;
+      activePage = readingReturnState.activePage;
+    }
+    readingReturnState = null;
+    renderChapterIndex();
+    void renderSpread();
+    readAsBookButton.focus({ preventScroll: true });
+  };
+
   const turnSpread = (direction) => {
     if (pageTurning || loadingPage || loadingIndex) return;
     if (isMobileBook() && document.body.classList.contains('is-mobile-index')) {
@@ -660,6 +835,9 @@
     setMobileBookPage('index');
     document.querySelector('#archive-title').focus({ preventScroll: true });
   });
+  readAsBookButton.addEventListener('click', enterReadingMode);
+  exitReadingButton.addEventListener('click', exitReadingMode);
+  exitReadingMobileButton.addEventListener('click', exitReadingMode);
   returnToStoryButton.addEventListener('click', returnToStory);
   authDialog.querySelector('[data-auth-close]').addEventListener('click', () => authDialog.close());
   authDialog.addEventListener('click', (event) => { if (event.target === authDialog) authDialog.close(); });
@@ -703,12 +881,15 @@
   grid.addEventListener('click', (event) => {
     const retry = event.target.closest('[data-retry-spread]');
     if (retry) { void renderSpread(); return; }
+    const favorite = event.target.closest('[data-favorite-id]');
+    if (favorite) { event.preventDefault(); event.stopPropagation(); void setFavorite(favorite.dataset.favoriteId, favorite); return; }
     const opener = event.target.closest('[data-memory-id]');
     if (!opener) return;
     const index = visible.findIndex((memory) => memory.id === opener.dataset.memoryId);
     if (index >= 0) void openMemory(index);
   });
   viewer.querySelector('[data-viewer-close]').addEventListener('click', () => viewer.close());
+  viewerFavoriteButton.addEventListener('click', () => void setFavorite(viewerFavoriteButton.dataset.favoriteId, viewerFavoriteButton));
   viewer.addEventListener('click', (event) => { if (event.target === viewer) viewer.close(); });
   viewer.addEventListener('close', () => {
     viewerRenderId += 1;

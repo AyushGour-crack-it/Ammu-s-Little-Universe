@@ -18,6 +18,8 @@
     { id: 'demo-note-2', media_type: 'little-things', title: 'The first little text', memory_date: '2026-09-21', caption: 'One little Instagram text, and somehow my favourite story began. For my Tara, my Ammu. ♡', content_type: 'text/plain', location: 'Madurai → Chennai' },
     { id: 'demo-voice-2', media_type: 'voice', title: 'Tell me that story again', memory_date: '2026-09-12', caption: 'One of those calls that made the whole evening softer.', location: '', signed_url: silentWav, content_type: 'audio/wav' },
   ];
+  let favorites = new Set();
+  try { favorites = new Set(JSON.parse(localStorage.getItem('diary-preview-favorites') || '[]')); } catch (_) { /* The sample remains usable if browser storage is disabled. */ }
 
   document.body.classList.add('is-demo-preview');
   const badge = document.createElement('div');
@@ -29,8 +31,12 @@
     configured: true,
     getMemberSession: async () => ({ user: { id: 'local-preview-member' } }),
     signInWithEmail: async () => { throw new Error('Sign-in is disabled in this sample preview.'); },
-    listMemoryIndex: async () => memories.map(({ signed_url, preview_poster, ...item }) => item),
-    getMemoriesByIds: async (ids) => memories.filter((item) => ids.includes(item.id)),
+    listMemoryIndex: async () => memories.map(({ signed_url, preview_poster, ...item }) => ({ ...item, is_favorite: favorites.has(item.id) })),
+    setMemoryFavorite: async (id, isFavorite) => {
+      if (isFavorite) favorites.add(id); else favorites.delete(id);
+      try { localStorage.setItem('diary-preview-favorites', JSON.stringify([...favorites])); } catch (_) { /* Sample toggles still work for this page. */ }
+    },
+    getMemoriesByIds: async (ids) => memories.filter((item) => ids.includes(item.id)).map((item) => ({ ...item, is_favorite: favorites.has(item.id) })),
     getMemoryById: async (id) => memories.find((item) => item.id === id) || null,
     signOut: async () => { location.href = location.pathname; },
   };
