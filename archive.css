@@ -1129,3 +1129,27 @@ html.is-album-open { height: 100%; overflow: hidden; }
 @media (max-height: 650px) and (min-width: 651px) {
   .archive-preview-page.is-album-open .archive-margin-doodle { display: none; }
 }
+
+/* Fit photo keepsakes to the app window instead of scrolling the viewer shell. */
+.memory-viewer[data-kind="photo"] { max-height: calc(100dvh - 16px); overflow: hidden; }
+.memory-viewer[data-kind="photo"] .memory-viewer__shell {
+  box-sizing: border-box;
+  height: min(860px, calc(100dvh - 32px));
+  max-height: calc(100dvh - 32px);
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  overflow: hidden;
+}
+.memory-viewer[data-kind="photo"] .memory-viewer__stage { min-height: 0; max-height: 100%; overflow: hidden; }
+.memory-viewer[data-kind="photo"] .memory-viewer__photo-frame {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+}
+.memory-viewer[data-kind="photo"] .memory-viewer__photo-frame img { height: 100%; min-height: 0; max-height: 100%; }
+.memory-viewer[data-kind="photo"] .memory-viewer__photo-frame iframe { height: 100%; max-height: 100%; }
+@media (max-width: 650px) {
+  .memory-viewer[data-kind="photo"] .memory-viewer__shell { height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); }
+}
