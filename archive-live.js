@@ -819,7 +819,7 @@
     document.documentElement.classList.remove('is-album-open');
     document.body.classList.remove('is-mobile-index', 'is-mobile-memory-page');
     document.body.classList.add('is-story-open');
-    themeColor.setAttribute('content', '#090d1c');
+    themeColor.setAttribute('content', '#160f24');
     if (location.hash) history.replaceState(null, '', `${location.pathname}${location.search}`);
     enterAlbumButton.focus({ preventScroll: true });
   };

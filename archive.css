@@ -1153,3 +1153,61 @@ html.is-album-open { height: 100%; overflow: hidden; }
 @media (max-width: 650px) {
   .memory-viewer[data-kind="photo"] .memory-viewer__shell { height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); }
 }
+
+/* Moonlit blossom opening cover, adapted to the reference artwork on desktop and phones. */
+.archive-preview-page:not(.is-album-open) {
+  background-color: #160f24;
+  background-image: linear-gradient(180deg, rgba(18,11,29,.18), rgba(18,11,29,.06) 44%, rgba(18,11,29,.27)), url("assets/diary-night-opening.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.archive-preview-page:not(.is-album-open) .sky-grain { opacity: .07; }
+.archive-preview-page:not(.is-album-open) .archive-header { width: min(1220px, calc(100% - 64px)); border-bottom-color: rgba(240,211,199,.42); }
+.archive-preview-page:not(.is-album-open) .archive-wordmark { color: #fff0e4; font-family: var(--script); font-size: 21px; text-shadow: 0 2px 14px rgba(24,10,28,.7); }
+.archive-preview-page:not(.is-album-open) .archive-wordmark span { color: #f2cf9d; }
+.archive-preview-page:not(.is-album-open) .archive-back { color: #f5e4dc; font-family: var(--serif); font-size: 11px; font-style: italic; text-shadow: 0 2px 12px rgba(24,10,28,.8); }
+.archive-preview-page:not(.is-album-open) .archive-back span { color: #f0c58e; }
+.archive-preview-page:not(.is-album-open) .diary-welcome { align-content: start; padding: clamp(24px,4vh,44px) 0 12px; }
+.archive-preview-page:not(.is-album-open) .diary-book { width: min(32vw, 370px); aspect-ratio: 4 / 5; }
+.archive-preview-page:not(.is-album-open) .diary-book__pages { border-color: rgba(241,220,192,.88); background: linear-gradient(90deg,#cda886,#f1e1c9 9%,#fff2df 100%); }
+.archive-preview-page:not(.is-album-open) .diary-book__cover {
+  overflow: visible;
+  border-color: rgba(164,113,91,.8);
+  border-radius: 5px 24px 24px 5px;
+  background:
+    radial-gradient(circle at 15% 13%, rgba(192,104,129,.23) 0 2px, transparent 3px),
+    radial-gradient(circle at 20% 16%, rgba(192,104,129,.18) 0 3px, transparent 4px),
+    radial-gradient(circle at 12% 20%, rgba(192,104,129,.15) 0 2px, transparent 3px),
+    radial-gradient(ellipse at 92% 7%, rgba(198,132,130,.18), transparent 28%),
+    linear-gradient(90deg,#bd7181 0 12px,#ead4b8 12px,#f8ecd9 100%);
+  box-shadow: inset 5px 0 0 rgba(115,54,71,.18), inset 15px 0 18px rgba(103,64,61,.11), 8px 12px 22px rgba(20,9,22,.26);
+  color: #60473f;
+}
+.archive-preview-page:not(.is-album-open) .diary-book__cover::before { inset: 12px; border-color: rgba(153,103,82,.38); border-radius: 3px 17px 17px 3px; }
+.diary-book__cover-flower { position: absolute; top: 18px; left: 24px; color: #b7637d; font: 24px/1 var(--serif); text-shadow: 0 2px 8px rgba(162,85,105,.18); }
+.diary-book__cover-stamp { position: absolute; top: 12%; right: 11%; display: grid; width: 58px; height: 68px; align-content: center; justify-items: center; gap: 3px; border: 4px solid #fff8eb; outline: 1px solid rgba(135,97,77,.35); background: linear-gradient(145deg,#f1d5b0,#bf7d72); box-shadow: 0 5px 12px rgba(82,49,46,.2); color: #fff6e8; transform: rotate(7deg); }
+.diary-book__cover-stamp > span { font-size: 26px; line-height: 1; }
+.diary-book__cover-stamp small { font: 5px/1 var(--sans); letter-spacing: .08em; }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-star { margin-bottom: 8px; color: #b77a62; }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-kicker { color: #987356; font-size: 7px; }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-title { margin: 3px 0 8px; color: #724d51; font-size: clamp(56px,6vw,74px); }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-rule { margin-bottom: 10px; background: linear-gradient(90deg,transparent,#b37a69,transparent); }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-names { color: #75584c; }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-names i { color: #b56d7b; }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-prompt { right: auto; bottom: 20px; left: 50%; width: max-content; max-width: calc(100% - 54px); padding: 8px 15px; border: 1px dashed rgba(150,101,79,.55); border-radius: 99px; color: #76584a; transform: translateX(-50%); white-space: nowrap; }
+.archive-preview-page:not(.is-album-open) .diary-book__cover-prompt b { color: #a86c5d; }
+.archive-preview-page:not(.is-album-open) .diary-book-stage__caption { margin-top: 16px; color: #f6e1ce; font-size: 21px; text-shadow: 0 2px 12px rgba(20,8,22,.86); }
+.archive-preview-page:not(.is-album-open) .diary-book-stage__caption::after { display: block; margin-top: 4px; color: #efc894; content: '────── ✦ ──────'; font: 10px/1.2 var(--serif); letter-spacing: .16em; }
+.archive-preview-page:not(.is-album-open) .diary-enter-album { border-color: rgba(240,204,166,.66); border-radius: 99px; background: rgba(43,26,39,.5); color: #ffe6c6; backdrop-filter: blur(5px); }
+.archive-preview-page:not(.is-album-open) .diary-enter-album:hover { background: rgba(100,54,69,.62); }
+@media (max-width: 650px) {
+  .archive-preview-page:not(.is-album-open) .archive-header { width: calc(100% - 30px); }
+  .archive-preview-page:not(.is-album-open) .diary-welcome { padding-top: 18px; }
+  .archive-preview-page:not(.is-album-open) .diary-book { width: min(72vw, 322px); }
+  .diary-book__cover-flower { top: 14px; left: 19px; font-size: 20px; }
+  .diary-book__cover-stamp { width: 48px; height: 56px; border-width: 3px; }
+  .archive-preview-page:not(.is-album-open) .diary-book-stage__caption { margin-top: 11px; font-size: 18px; }
+  .archive-preview-page:not(.is-album-open) .diary-book-stage__caption::after { margin-top: 2px; }
+  .archive-preview-page:not(.is-album-open) { background-image: linear-gradient(180deg, rgba(18,11,29,.1), rgba(18,11,29,.06) 46%, rgba(18,11,29,.12)), url("assets/diary-night-opening-mobile.jpg"); }
+}

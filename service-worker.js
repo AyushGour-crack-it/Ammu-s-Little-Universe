@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'ammus-little-universe-';
-const CACHE_NAME = `${CACHE_PREFIX}shell-v1`;
+const CACHE_NAME = `${CACHE_PREFIX}shell-v2`;
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -14,6 +14,8 @@ const APP_SHELL = [
   '/assets/app-icon-maskable-512.png',
   '/assets/apple-touch-icon.png',
   '/assets/diary-opening-story.jpg',
+  '/assets/diary-night-opening.jpg',
+  '/assets/diary-night-opening-mobile.jpg',
   '/assets/stars/first-hello-sky.png',
   '/assets/photos/ammu-purple-glasses.jpeg',
   '/assets/photos/ammu-black-white.jpeg',
