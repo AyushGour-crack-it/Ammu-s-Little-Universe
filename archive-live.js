@@ -58,6 +58,7 @@
   let loadingPage = false;
   let pageRenderId = 0;
   let viewerRenderId = 0;
+  let letterLayoutObserver = null;
   let pageTurning = false;
   let bookOpening = false;
   let mobileFlipTimer = null;
@@ -500,6 +501,84 @@
   };
 
   const formatTime = (seconds) => `${Math.floor((seconds || 0) / 60)}:${Math.floor((seconds || 0) % 60).toString().padStart(2, '0')}`;
+  const attachLetterPagination = (message, paper, pager, fullText) => {
+    letterLayoutObserver?.disconnect();
+    let pages = [fullText];
+    let pageIndex = 0;
+    let fitting = false;
+    const words = fullText.match(/\S+\s*/g) || [fullText];
+    const previous = pager.querySelector('[data-letter-page="previous"]');
+    const next = pager.querySelector('[data-letter-page="next"]');
+    const count = pager.querySelector('[data-letter-page="count"]');
+    const renderPage = () => {
+      message.textContent = pages[pageIndex] || '';
+      count.textContent = `${pageIndex + 1} / ${pages.length}`;
+      previous.disabled = pageIndex === 0;
+      next.disabled = pageIndex >= pages.length - 1;
+    };
+    const fitPages = () => {
+      if (fitting || !paper.isConnected) return;
+      fitting = true;
+      const priorPage = pageIndex;
+      pager.hidden = true;
+      message.textContent = fullText;
+      if (message.scrollHeight <= message.clientHeight + 1) {
+        pages = [fullText];
+        pageIndex = 0;
+        fitting = false;
+        renderPage();
+        return;
+      }
+
+      pager.hidden = false;
+      requestAnimationFrame(() => {
+        if (!paper.isConnected) { fitting = false; return; }
+        const availableHeight = message.clientHeight;
+        if (!availableHeight) { fitting = false; return; }
+        const nextPages = [];
+        let start = 0;
+        while (start < words.length) {
+          let low = start + 1;
+          let high = words.length;
+          let best = start + 1;
+          while (low <= high) {
+            const middle = Math.floor((low + high) / 2);
+            message.textContent = words.slice(start, middle).join('');
+            if (message.scrollHeight <= availableHeight + 1) { best = middle; low = middle + 1; }
+            else high = middle - 1;
+          }
+          const candidate = words.slice(start, best).join('');
+          message.textContent = candidate;
+          if (best === start + 1 && message.scrollHeight > availableHeight + 1 && Array.from(words[start]).length > 1) {
+            const characters = Array.from(words[start]);
+            let charLow = 1;
+            let charHigh = characters.length;
+            let charBest = 1;
+            while (charLow <= charHigh) {
+              const middle = Math.floor((charLow + charHigh) / 2);
+              message.textContent = characters.slice(0, middle).join('');
+              if (message.scrollHeight <= availableHeight + 1) { charBest = middle; charLow = middle + 1; }
+              else charHigh = middle - 1;
+            }
+            nextPages.push(characters.slice(0, charBest).join(''));
+            words[start] = characters.slice(charBest).join('');
+          } else {
+            nextPages.push(candidate.trim());
+            start = best;
+          }
+        }
+        pages = nextPages.length ? nextPages : [fullText];
+        pageIndex = Math.min(priorPage, pages.length - 1);
+        fitting = false;
+        renderPage();
+      });
+    };
+    previous.addEventListener('click', () => { if (pageIndex > 0) { pageIndex -= 1; renderPage(); } });
+    next.addEventListener('click', () => { if (pageIndex < pages.length - 1) { pageIndex += 1; renderPage(); } });
+    letterLayoutObserver = new ResizeObserver(fitPages);
+    letterLayoutObserver.observe(paper);
+    requestAnimationFrame(fitPages);
+  };
   const openMemory = async (index) => {
     if (!visible.length) return;
     currentIndex = (index + visible.length) % visible.length;
@@ -514,7 +593,7 @@
     viewerFavoriteButton.dataset.favoriteId = memoryIndexItem.id;
     viewerFavoriteButton.setAttribute('aria-pressed', String(Boolean(memoryIndexItem.is_favorite)));
     viewerFavoriteButton.textContent = memoryIndexItem.is_favorite ? '♥ saved in our favorites' : '♡ save to our favorites';
-    document.querySelector('#memory-viewer-description').textContent = memoryIndexItem.media_type === 'little-things' ? '' : memoryIndexItem.caption || '';
+    document.querySelector('#memory-viewer-description').textContent = ['little-things', 'photo'].includes(memoryIndexItem.media_type) ? '' : memoryIndexItem.caption || '';
     document.querySelector('#memory-viewer-count').textContent = `${currentIndex + 1} / ${visible.length}`;
     viewer.dataset.kind = memoryIndexItem.media_type;
     viewer.classList.remove('is-video-compact');
@@ -533,11 +612,18 @@
         message.textContent = memory?.viewer_error || 'This keepsake could not be opened. Refresh the diary and try again.';
         viewerStage.append(message);
       } else if (memory.media_type === 'photo') {
+        viewerStage.replaceChildren(loadingMessage);
         const frame = document.createElement('figure'); frame.className = 'memory-viewer__photo-frame';
-        const image = document.createElement('img'); image.src = memory.signed_url; image.alt = memory.title;
-        const caption = document.createElement('figcaption'); caption.textContent = memory.caption || memory.title;
-        frame.append(image, caption); viewerStage.append(frame);
+        const image = new Image(); image.decoding = 'async'; image.src = memory.signed_url; image.alt = memory.title || 'A photo memory';
+        await image.decode();
+        if (renderId !== viewerRenderId || !viewer.open) return;
+        image.width = image.naturalWidth; image.height = image.naturalHeight;
+        frame.style.setProperty('--media-ratio', `${image.naturalWidth} / ${image.naturalHeight}`);
+        frame.append(image);
+        if (memory.caption) { const caption = document.createElement('figcaption'); caption.textContent = memory.caption; frame.append(caption); }
+        viewerStage.append(frame);
       } else if (memory.media_type === 'video') {
+        viewerStage.replaceChildren(loadingMessage);
         const frame = document.createElement('section'); frame.className = 'video-viewer'; frame.setAttribute('aria-label', 'Video memory player');
         const screen = document.createElement('div'); screen.className = 'video-viewer__screen';
         const video = document.createElement('video'); video.className = 'video-viewer__media'; video.controls = false; video.playsInline = true; video.preload = 'metadata'; video.src = memory.signed_url; video.setAttribute('aria-label', memory.title || 'A little film');
@@ -553,7 +639,7 @@
         const sound = document.createElement('button'); sound.className = 'video-viewer__control video-viewer__sound'; sound.type = 'button'; sound.textContent = '♫'; sound.setAttribute('aria-label', 'Mute video');
         const fullscreen = document.createElement('button'); fullscreen.className = 'video-viewer__control video-viewer__fullscreen'; fullscreen.type = 'button'; fullscreen.textContent = '⛶'; fullscreen.setAttribute('aria-label', 'Enter full screen');
         controls.append(play, elapsed, seek, duration, sound, fullscreen);
-        frame.append(screen, controls); viewerStage.append(frame);
+        frame.append(screen, controls);
 
         const updatePlayback = () => {
           const playing = !video.paused && !video.ended;
@@ -596,10 +682,15 @@
             screen.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
             viewer.classList.toggle('is-video-compact', ratio < 1.2);
           }
+          if (renderId === viewerRenderId && viewer.open) viewerStage.replaceChildren(frame);
           updateTime();
         });
         video.addEventListener('durationchange', updateTime);
-        video.addEventListener('error', () => { videoStatus.textContent = 'This video could not be loaded. Refresh the diary and try again.'; videoStatus.hidden = false; });
+        video.addEventListener('error', () => {
+          if (renderId !== viewerRenderId || !viewer.open) return;
+          const errorMessage = document.createElement('p'); errorMessage.className = 'diary-live-status is-error';
+          errorMessage.textContent = 'This video could not be loaded. Refresh the diary and try again.'; viewerStage.replaceChildren(errorMessage);
+        });
         seek.addEventListener('input', () => { if (Number.isFinite(video.duration) && video.duration > 0) video.currentTime = Number(seek.value) / 1000 * video.duration; });
         sound.addEventListener('click', () => {
           video.muted = !video.muted;
@@ -616,6 +707,7 @@
         });
         frame.addEventListener('fullscreenchange', updateFullscreen);
         video.addEventListener('webkitendfullscreen', updateFullscreen);
+        video.load();
       } else if (memory.media_type === 'voice') {
         const frame = document.createElement('div'); frame.className = 'memory-viewer__note-frame';
         const icon = document.createElement('span'); icon.textContent = '♫'; icon.setAttribute('aria-hidden', 'true');
@@ -625,7 +717,7 @@
         const play = document.createElement('button'); play.className = 'voice-viewer__play'; play.type = 'button'; play.textContent = '▶'; play.setAttribute('aria-label', 'Play voice note');
         const body = document.createElement('div'); body.className = 'voice-viewer__body';
         const wave = document.createElement('div'); wave.className = 'voice-viewer__wave'; wave.setAttribute('aria-hidden', 'true');
-        for (let index = 0; index < 25; index += 1) wave.append(document.createElement('i'));
+        for (let index = 0; index < 33; index += 1) wave.append(document.createElement('i'));
         const progress = document.createElement('input'); progress.className = 'voice-viewer__progress'; progress.type = 'range'; progress.min = '0'; progress.max = '1000'; progress.value = '0'; progress.setAttribute('aria-label', 'Seek through voice note');
         const times = document.createElement('div'); times.className = 'voice-viewer__time';
         const elapsed = document.createElement('span'); const duration = document.createElement('span'); elapsed.textContent = '0:00'; duration.textContent = '0:00'; times.append(elapsed, duration);
@@ -647,17 +739,23 @@
         const title = document.createElement('h3'); title.textContent = memory.title || 'A note for us';
         const message = document.createElement('p'); message.className = 'memory-letter__message'; message.textContent = memory.caption || (memory.content_type === 'text/plain' ? 'Opening this little letter…' : memory.title);
         const signature = document.createElement('span'); signature.className = 'memory-letter__signature'; signature.textContent = 'always, us  ♡';
-        paper.append(heading, title, message, signature);
+        const pager = document.createElement('nav'); pager.className = 'memory-letter__pager'; pager.setAttribute('aria-label', 'Letter pages'); pager.hidden = true;
+        const previousPage = document.createElement('button'); previousPage.type = 'button'; previousPage.dataset.letterPage = 'previous'; previousPage.textContent = '←'; previousPage.setAttribute('aria-label', 'Previous letter page');
+        const pageCount = document.createElement('span'); pageCount.dataset.letterPage = 'count'; pageCount.setAttribute('aria-live', 'polite');
+        const nextPage = document.createElement('button'); nextPage.type = 'button'; nextPage.dataset.letterPage = 'next'; nextPage.textContent = '→'; nextPage.setAttribute('aria-label', 'Next letter page');
+        pager.append(previousPage, pageCount, nextPage);
+        paper.append(heading, title, message, pager, signature);
         const envelope = document.createElement('div'); envelope.className = 'memory-letter__envelope'; envelope.setAttribute('aria-hidden', 'true');
         const back = document.createElement('span'); back.className = 'memory-letter__back';
         const front = document.createElement('span'); front.className = 'memory-letter__front';
         const flap = document.createElement('span'); flap.className = 'memory-letter__flap';
         const seal = document.createElement('span'); seal.className = 'memory-letter__seal'; seal.textContent = '♡';
         envelope.append(back, front, flap, seal); frame.append(paper, envelope); viewerStage.append(frame);
+        if (memory.caption || memory.content_type !== 'text/plain') attachLetterPagination(message, paper, pager, message.textContent);
         if (!memory.caption && memory.content_type === 'text/plain') {
           fetch(memory.signed_url).then((response) => { if (!response.ok) throw new Error('Could not open letter'); return response.text(); }).then((text) => {
-            if (renderId === viewerRenderId && viewer.open) message.textContent = text.slice(0, 20000);
-          }).catch(() => { if (renderId === viewerRenderId && viewer.open) message.textContent = memory.title || 'This little letter could not be opened.'; });
+            if (renderId === viewerRenderId && viewer.open) attachLetterPagination(message, paper, pager, text.slice(0, 20000));
+          }).catch(() => { if (renderId === viewerRenderId && viewer.open) attachLetterPagination(message, paper, pager, memory.title || 'This little letter could not be opened.'); });
         }
       } else if (memory.content_type === 'application/pdf') {
         const frame = document.createElement('div'); frame.className = 'memory-viewer__photo-frame';
@@ -893,6 +991,8 @@
   viewer.addEventListener('click', (event) => { if (event.target === viewer) viewer.close(); });
   viewer.addEventListener('close', () => {
     viewerRenderId += 1;
+    letterLayoutObserver?.disconnect();
+    letterLayoutObserver = null;
     viewerStage.querySelectorAll('audio,video').forEach((media) => media.pause());
   });
   viewer.querySelectorAll('[data-viewer-step]').forEach((button) => button.addEventListener('click', () => {
