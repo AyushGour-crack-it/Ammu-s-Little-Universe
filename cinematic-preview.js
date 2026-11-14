@@ -22,6 +22,52 @@
   let lilySwayTimeline;
   let lilyBloomHasRun = false;
 
+  const touchSelectionMode = window.matchMedia('(hover: none) and (pointer: coarse)');
+  const finePointerMode = window.matchMedia('(hover: hover) and (pointer: fine)');
+  if (finePointerMode.matches) {
+    const cursor = document.createElement('span');
+    cursor.className = 'heart-cursor';
+    cursor.setAttribute('aria-hidden', 'true');
+    cursor.innerHTML = '<svg viewBox="0 0 32 32" focusable="false"><path d="M16 28S3.5 20.4 3.5 11.8A6.6 6.6 0 0 1 16 8.9a6.6 6.6 0 0 1 12.5 2.9C28.5 20.4 16 28 16 28Z"/></svg>';
+    document.body.append(cursor);
+    document.body.classList.add('has-heart-cursor');
+    let lastTrailAt = 0;
+    let cursorFrame = 0;
+    let pointerX = -100;
+    let pointerY = -100;
+    const moveCursor = (event) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (!cursorFrame) cursorFrame = window.requestAnimationFrame(() => {
+        cursor.style.left = `${pointerX}px`;
+        cursor.style.top = `${pointerY}px`;
+        cursorFrame = 0;
+      });
+      if (reducedMotion || event.timeStamp - lastTrailAt < 78) return;
+      lastTrailAt = event.timeStamp;
+      const heart = document.createElement('span');
+      heart.className = 'heart-cursor__trail';
+      heart.setAttribute('aria-hidden', 'true');
+      heart.textContent = '♥';
+      heart.style.left = `${pointerX}px`;
+      heart.style.top = `${pointerY}px`;
+      heart.style.setProperty('--trail-turn', `${Math.round(Math.random() * 36 - 18)}deg`);
+      document.body.append(heart);
+      window.setTimeout(() => heart.remove(), 780);
+    };
+    document.addEventListener('pointermove', moveCursor, { passive: true });
+    document.addEventListener('pointerdown', () => cursor.classList.add('is-pressed'), { passive: true });
+    document.addEventListener('pointerup', () => cursor.classList.remove('is-pressed'), { passive: true });
+    document.addEventListener('pointerleave', () => cursor.classList.add('is-hidden'));
+    document.addEventListener('pointerenter', () => cursor.classList.remove('is-hidden'));
+  }
+  const isEditableTarget = (target) => target instanceof Element && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
+  if (touchSelectionMode.matches) {
+    document.addEventListener('contextmenu', (event) => { if (!isEditableTarget(event.target)) event.preventDefault(); }, true);
+    document.addEventListener('selectstart', (event) => { if (!isEditableTarget(event.target)) event.preventDefault(); }, true);
+    document.addEventListener('dragstart', (event) => { if (event.target instanceof HTMLImageElement) event.preventDefault(); }, true);
+  }
+
   const activeRoute = () => window.matchMedia('(max-width: 760px)').matches && mobileRoute ? mobileRoute : route;
   const setIntroVisible = () => document.documentElement.classList.add('intro-ready');
   const placePlane = (progress = 1) => {
@@ -316,6 +362,18 @@
   lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
   lightbox.addEventListener('close', () => { lightboxImage.removeAttribute('src'); });
 
+  const starMapDialog = document.querySelector('#star-map-viewer');
+  document.querySelector('[data-star-map-open]')?.addEventListener('click', () => {
+    if (typeof starMapDialog.showModal === 'function') starMapDialog.showModal();
+    else starMapDialog.setAttribute('open', '');
+  });
+  const closeStarMap = () => {
+    if (typeof starMapDialog?.close === 'function') starMapDialog.close();
+    else starMapDialog?.removeAttribute('open');
+  };
+  starMapDialog?.querySelector('[data-star-map-close]')?.addEventListener('click', closeStarMap);
+  starMapDialog?.addEventListener('click', (event) => { if (event.target === starMapDialog) closeStarMap(); });
+
   document.querySelector('.secret-star-button')?.addEventListener('click', (event) => {
     const button = event.currentTarget;
     const secret = document.querySelector('#potato-secret');
@@ -423,10 +481,26 @@
   if (birthday) {
     const label = birthday.querySelector('#birthday-countdown-label');
     const units = Object.fromEntries([...birthday.querySelectorAll('[data-countdown-unit]')].map((unit) => [unit.dataset.countdownUnit, unit]));
+    const unitsContainer = birthday.querySelector('#birthday-countdown-units');
+    const celebration = birthday.querySelector('#birthday-celebration');
     const indiaDateFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const forceBirthdayPreview = new URLSearchParams(window.location.search).get('birthday-preview') === '1';
     const updateBirthday = () => {
       const parts = Object.fromEntries(indiaDateFormatter.formatToParts(new Date()).filter((part) => part.type !== 'literal').map((part) => [part.type, Number(part.value)]));
-      const year = parts.month > 11 || (parts.month === 11 && parts.day >= 19) ? parts.year + 1 : parts.year;
+      const isBirthday = forceBirthdayPreview || (parts.month === 11 && parts.day === 19);
+      if (isBirthday) {
+        birthday.classList.add('is-birthday');
+        birthday.setAttribute('aria-label', 'Happy birthday, Tara! November 19, India time.');
+        label.textContent = 'November 19 · today is all yours';
+        unitsContainer.hidden = true;
+        celebration.hidden = false;
+        return;
+      }
+      birthday.classList.remove('is-birthday');
+      birthday.setAttribute('aria-label', 'Countdown to November 19 India time');
+      unitsContainer.hidden = false;
+      celebration.hidden = true;
+      const year = parts.month === 11 && parts.day >= 19 ? parts.year + 1 : parts.year;
       const left = Math.max(0, Math.floor((Date.UTC(year, 10, 18, 18, 30) - Date.now()) / 1000));
       units.days.textContent = String(Math.floor(left / 86400));
       units.hours.textContent = String(Math.floor(left % 86400 / 3600)).padStart(2, '0');
