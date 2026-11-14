@@ -4,25 +4,34 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#080e21" />
-  <meta name="description" content="A private cinematic story preview for Dear Ammu." />
-  <title>Dear Ammu · Our Story Preview</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="For Ammu" />
+  <meta name="description" content="A little universe made with love for Ammu: our story, the things we keep, and a thousand more moments." />
+  <title>Dear Ammu · Under the Same Sky</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/assets/app-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <link rel="stylesheet" href="cinematic-preview.css" />
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
   <script src="cinematic-preview.js" defer></script>
+  <script src="pwa.js" defer></script>
 </head>
 <body>
   <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
   <header class="preview-header">
     <a class="wordmark" href="#beginning" aria-label="Dear Ammu, beginning of the story"><span aria-hidden="true">☾</span><span>Dear Ammu</span></a>
-    <span class="preview-label">A PRIVATE CHAPTER PREVIEW</span>
+    <span class="preview-label">A LITTLE UNIVERSE, MADE FOR YOU</span>
     <div class="header-actions">
+      <a class="diary-header-link" href="archive.html">Our diary</a>
+      <button class="pwa-install-button" id="pwa-install-button" type="button" aria-label="Install Dear Ammu as an app"><span aria-hidden="true">↓</span><span class="pwa-install-button__label">save app</span></button>
       <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false" aria-label="Enable gentle interaction sounds"><span class="sound-toggle__icon" aria-hidden="true">♫</span><span class="sound-toggle__label">sound off</span></button>
       <button class="skip-button" id="skip-intro" type="button">Skip intro <span aria-hidden="true">↗</span></button>
     </div>
   </header>
 
-  <main>
+  <main id="top">
     <section class="opening" id="beginning" aria-labelledby="opening-title">
       <svg class="environment" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="environment-title environment-description">
         <title id="environment-title">A quiet midnight sky above a sleeping city</title>
@@ -272,6 +281,15 @@
 
     <dialog class="keepsake-lightbox" id="keepsake-lightbox" aria-label="Photo memory"><button type="button" data-lightbox-close aria-label="Close photo">×</button><img alt=""/><p></p></dialog>
   </main>
-  <footer class="preview-footer"><span>DEAR AMMU</span><i aria-hidden="true">✦</i><span>SIX CHAPTERS · PRIVATE PREVIEW</span></footer>
+  <dialog class="pwa-install-dialog" id="pwa-install-guide" aria-labelledby="pwa-install-title">
+    <div class="pwa-install-dialog__card">
+      <button class="pwa-install-dialog__close" type="button" data-pwa-close aria-label="Close install guide">×</button>
+      <p class="eyebrow"><span></span> a little app for us</p>
+      <h2 id="pwa-install-title">Keep our little universe close.</h2>
+      <p class="pwa-install-dialog__instructions" id="pwa-install-instructions">Use your browser’s install option to add this site to your home screen.</p>
+      <p class="pwa-install-dialog__note">After one online visit, the story and its photos can open offline. The private diary and audio/video memories need an internet connection.</p>
+    </div>
+  </dialog>
+  <footer class="preview-footer"><span>DEAR AMMU</span><i aria-hidden="true">✦</i><span>A STORY IN SIX CHAPTERS · ALWAYS US</span></footer>
 </body>
 </html>

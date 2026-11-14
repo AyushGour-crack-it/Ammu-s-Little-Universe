@@ -1,11 +1,13 @@
 const CACHE_PREFIX = 'ammus-little-universe-';
-const CACHE_NAME = `${CACHE_PREFIX}shell-v2`;
+const CACHE_NAME = `${CACHE_PREFIX}shell-v3`;
 const APP_SHELL = [
   '/',
   '/index.html',
   '/offline.html',
   '/styles.css',
   '/script.js',
+  '/cinematic-preview.css',
+  '/cinematic-preview.js',
   '/pwa.js',
   '/manifest.webmanifest',
   '/assets/app-icon.svg',
@@ -16,6 +18,8 @@ const APP_SHELL = [
   '/assets/diary-opening-story.jpg',
   '/assets/diary-night-opening.jpg',
   '/assets/diary-night-opening-mobile.jpg',
+  '/assets/cinematic-lily-bouquet.svg',
+  '/assets/stickers/couple-sticker-sheet.jpg',
   '/assets/stars/first-hello-sky.png',
   '/assets/photos/ammu-purple-glasses.jpeg',
   '/assets/photos/ammu-black-white.jpeg',
@@ -61,7 +65,7 @@ self.addEventListener('fetch', (event) => {
 
   // Keep the app shell and artwork available offline. Never cache audio/video,
   // Supabase responses, auth tokens, or private diary memory URLs.
-  const isStaticShell = ['/styles.css', '/script.js', '/pwa.js', '/archive.css', '/archive-live.js', '/diary-client.js', '/manifest.webmanifest'].includes(url.pathname);
+  const isStaticShell = ['/styles.css', '/script.js', '/cinematic-preview.css', '/cinematic-preview.js', '/pwa.js', '/archive.css', '/archive-live.js', '/diary-client.js', '/manifest.webmanifest'].includes(url.pathname);
   const isArtwork = url.pathname.startsWith('/assets/') && /\.(svg|png|jpe?g|webp)$/i.test(url.pathname);
   if (!isStaticShell && !isArtwork) return;
 
