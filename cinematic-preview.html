@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#080e21" />
+  <meta name="description" content="A private cinematic story preview for Dear Ammu." />
+  <title>Dear Ammu · Our Story Preview</title>
+  <link rel="stylesheet" href="cinematic-preview.css" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+  <script src="cinematic-preview.js" defer></script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
+  <header class="preview-header">
+    <a class="wordmark" href="#beginning" aria-label="Dear Ammu, beginning of the story"><span aria-hidden="true">☾</span><span>Dear Ammu</span></a>
+    <span class="preview-label">A PRIVATE CHAPTER PREVIEW</span>
+    <div class="header-actions">
+      <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false" aria-label="Enable gentle interaction sounds"><span class="sound-toggle__icon" aria-hidden="true">♫</span><span class="sound-toggle__label">sound off</span></button>
+      <button class="skip-button" id="skip-intro" type="button">Skip intro <span aria-hidden="true">↗</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="opening" id="beginning" aria-labelledby="opening-title">
+      <svg class="environment" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="environment-title environment-description">
+        <title id="environment-title">A quiet midnight sky above a sleeping city</title>
+        <desc id="environment-description">A softly illustrated navy night with a glowing moon, scattered stars, drifting clouds, a cherry blossom branch, and tiny city lights.</desc>
+        <defs>
+          <linearGradient id="night-sky" x1="0" y1="0" x2="0.86" y2="1"><stop stop-color="#080d1e"/><stop offset=".44" stop-color="#12162b"/><stop offset=".78" stop-color="#29233c"/><stop offset="1" stop-color="#17182a"/></linearGradient>
+          <radialGradient id="moon-aura"><stop stop-color="#f1d6a7" stop-opacity=".55"/><stop offset=".23" stop-color="#d5b78e" stop-opacity=".23"/><stop offset="1" stop-color="#b49ac0" stop-opacity="0"/></radialGradient>
+          <radialGradient id="moon-face" cx=".35" cy=".3" r=".8"><stop stop-color="#fff5dc"/><stop offset=".58" stop-color="#e6d1ac"/><stop offset="1" stop-color="#bca98f"/></radialGradient>
+          <linearGradient id="cloud-fill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#697087" stop-opacity=".35"/><stop offset="1" stop-color="#b18a9a" stop-opacity=".15"/></linearGradient>
+          <linearGradient id="distant-hill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#29283b"/><stop offset="1" stop-color="#111421"/></linearGradient>
+          <filter id="soft-blur" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="34"/></filter>
+          <filter id="moon-soft" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="12"/></filter>
+          <filter id="star-glow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.3"/></filter>
+          <g id="blossom" fill="#dda2ad" stroke="#f0c5c5" stroke-opacity=".3" stroke-width="1"><ellipse cy="-7" rx="4.2" ry="7"/><ellipse cy="-7" rx="4.2" ry="7" transform="rotate(72)"/><ellipse cy="-7" rx="4.2" ry="7" transform="rotate(144)"/><ellipse cy="-7" rx="4.2" ry="7" transform="rotate(216)"/><ellipse cy="-7" rx="4.2" ry="7" transform="rotate(288)"/><circle r="2.1" fill="#f4d797" stroke="none"/></g>
+        </defs>
+        <g class="far-sky" data-depth=".1">
+          <rect width="1440" height="900" fill="url(#night-sky)"/>
+          <ellipse cx="1100" cy="355" rx="400" ry="280" fill="#7d668d" opacity=".11" filter="url(#soft-blur)"/>
+          <g class="star-layer star-layer--far" fill="#dce4f0">
+            <circle class="star" cx="122" cy="141" r="1.1"/><circle class="star" cx="255" cy="306" r="1"/><circle class="star" cx="386" cy="155" r="1.2"/><circle class="star" cx="521" cy="249" r=".9"/><circle class="star" cx="693" cy="114" r="1.1"/><circle class="star" cx="802" cy="308" r="1"/><circle class="star" cx="918" cy="176" r="1.1"/><circle class="star" cx="1083" cy="306" r=".9"/><circle class="star" cx="1334" cy="176" r="1.2"/><circle class="star" cx="70" cy="432" r=".8"/><circle class="star" cx="980" cy="420" r=".8"/><circle class="star" cx="1250" cy="450" r=".9"/>
+          </g>
+          <g class="star-layer star-layer--near" fill="#f3e4c5">
+            <path class="star" d="M207 210l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path class="star" d="M589 166l1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z"/><path class="star" d="M855 237l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path class="star" d="M1180 112l1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z"/><path class="star" d="M1370 359l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z"/>
+          </g>
+          <path d="M130 270l75-60 50 96 131-151" fill="none" stroke="#d5c7a7" stroke-opacity=".19" stroke-width=".8"/>
+        </g>
+        <g class="moon-layer" data-depth=".16">
+          <circle class="moon-halo" cx="1110" cy="245" r="175" fill="url(#moon-aura)" opacity="0"/>
+          <circle cx="1110" cy="245" r="70" fill="#f3d8ac" opacity=".25" filter="url(#moon-soft)"/>
+          <circle class="moon-disc" cx="1110" cy="245" r="52" fill="url(#moon-face)"/>
+          <g class="moon-craters" fill="#b6a48f" opacity=".2"><circle cx="1090" cy="223" r="7"/><circle cx="1128" cy="232" r="11"/><circle cx="1099" cy="260" r="9"/><circle cx="1132" cy="270" r="5"/><circle cx="1111" cy="204" r="3"/></g>
+          <path d="M1092 205a52 52 0 0 0 52 87 52 52 0 1 1-52-87Z" fill="#182039" opacity=".13"/>
+        </g>
+        <g class="cloud-layer cloud-layer--back" data-depth=".06" fill="url(#cloud-fill)" stroke="#d3bbcc" stroke-opacity=".13" stroke-width="1.4">
+          <path d="M-100 544c38-31 78-24 102-3 12-42 55-57 91-37 24-42 86-37 105 8 44-7 75 20 78 55H-100Z"/>
+          <path d="M1084 521c25-28 62-25 82-6 10-35 49-47 78-27 22-35 75-27 89 11 38-4 64 19 65 49h-340Z"/>
+        </g>
+        <g class="cloud-layer cloud-layer--front" data-depth=".22" fill="url(#cloud-fill)" stroke="#d4b3c2" stroke-opacity=".19" stroke-width="1.5">
+          <path d="M-60 715c40-43 103-43 137-7 12-57 73-78 115-46 30-63 116-60 145 5 53-10 90 25 90 68H-60Z"/>
+          <path d="M1036 690c35-34 91-30 117 4 14-49 66-65 102-35 28-51 96-44 116 8 42-6 74 23 74 59h-425Z"/>
+        </g>
+        <g class="blossom-branch" data-depth=".28" fill="none" stroke="#5b4351" stroke-width="9" stroke-linecap="round">
+          <path d="M1470 18c-93 42-165 103-222 179-51 67-79 123-132 170"/><path d="M1301 137c-69-13-119-38-158-83"/><path d="M1250 203c-59 4-109-7-154-34"/><path d="M1194 267c-40 30-70 67-92 110"/><path d="M1374 89c-14 52-37 93-68 126"/>
+          <g stroke="none"><use href="#blossom" x="1305" y="130"/><use href="#blossom" x="1264" y="204"/><use href="#blossom" x="1205" y="269"/><use href="#blossom" x="1190" y="358"/><use href="#blossom" x="1372" y="91"/><use href="#blossom" x="1278" y="274"/><use href="#blossom" x="1342" y="177"/></g>
+        </g>
+        <g class="city-layer" data-depth=".18">
+          <path d="M0 760c158-53 237-38 362-13 109 21 189-28 302-25 125 4 184 44 313 18 146-30 273-45 463 8v152H0Z" fill="url(#distant-hill)"/>
+          <path d="M0 804c128-32 203-15 301 2 121 21 187-28 323-11 124 16 197 31 320 4 171-39 310-11 496 20v81H0Z" fill="#0d1220"/>
+          <g class="window-lights" fill="#d9b77c"><rect x="84" y="784" width="4" height="7"/><rect x="136" y="767" width="3" height="6"/><rect x="212" y="784" width="4" height="6"/><rect x="333" y="796" width="4" height="7"/><rect x="418" y="771" width="3" height="6"/><rect x="997" y="776" width="4" height="7"/><rect x="1130" y="789" width="4" height="6"/><rect x="1245" y="768" width="3" height="7"/><rect x="1362" y="792" width="4" height="7"/></g>
+        </g>
+      </svg>
+
+      <svg class="flight-art" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+        <path class="flight-trail flight-trail--ghost" d="M315 562C348 468 450 449 523 530C602 416 725 447 746 548C774 673 626 729 532 794C435 731 293 670 315 562C332 491 412 469 479 507C593 574 774 551 1032 622"/>
+        <path class="flight-trail flight-trail--draw" id="flight-route" d="M315 562C348 468 450 449 523 530C602 416 725 447 746 548C774 673 626 729 532 794C435 731 293 670 315 562C332 491 412 469 479 507C593 574 774 551 1032 622"/>
+        <path class="flight-trail flight-trail--ghost flight-trail--mobile" d="M720 450C630 370 510 390 510 475C510 540 635 595 720 655C805 595 930 540 930 475C930 390 810 370 720 450L720 685"/>
+        <path class="flight-trail flight-trail--draw flight-trail--mobile" id="flight-route-mobile" d="M720 450C630 370 510 390 510 475C510 540 635 595 720 655C805 595 930 540 930 475C930 390 810 370 720 450L720 685"/>
+        <g class="paper-plane" id="paper-plane">
+          <path d="M0 0 58-20 39 30 27 10 0 0Z" fill="#f1dfbd" stroke="#fff2d5" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="m0 0 39 10 19-30M39 10l-7 21-5-21" fill="#c8a987" stroke="#927c83" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="m0 0 39 10" fill="none" stroke="#fff6e4" stroke-opacity=".85" stroke-width="1.4"/>
+        </g>
+      </svg>
+      <div class="petal-field" aria-hidden="true"><span class="falling-petal petal-a">✿</span><span class="falling-petal petal-b">✿</span><span class="falling-petal petal-c">✿</span><span class="falling-petal petal-d">✿</span></div>
+
+      <div class="opening-copy" id="opening-copy">
+        <p class="eyebrow"><span></span> our first page</p>
+        <h1 id="opening-title">For Ammu,<br /><em>under the same sky.</em></h1>
+        <p class="opening-copy__note">A little hello, remembered<br class="mobile-only" /> beneath our first sky.</p>
+      </div>
+      <div class="moment-stamp"><span>JULY 30, 2026</span><i>✦</i><span>12:48 PM</span></div>
+
+      <button class="message-card" id="message-card" type="button" aria-expanded="false" aria-label="Open our first message" aria-controls="first-message">
+        <span class="message-card__front" aria-hidden="true"><span class="envelope-back"></span><span class="envelope-flap"></span><span class="envelope-heart">♡</span><span class="envelope-label">A LITTLE HELLO</span></span>
+        <span class="message-card__paper" id="first-message" hidden>
+          <span class="message-card__paper-kicker">INSTAGRAM · JULY 30, 2026 · 12:48 PM</span>
+          <span class="message-card__quote">“Lol these people.<br />I almost fell in love<br />with your pfp.”</span>
+          <span class="message-card__signoff">the beginning of us <i>♡</i></span>
+        </span>
+        <span class="message-card__prompt" aria-hidden="true"><span>tap to open our first hello</span><b>↗</b></span>
+      </button>
+      <p class="opening-caption" aria-hidden="true"><span>Ghaziabad</span><i>·</i><span>one message away</span></p>
+      <a class="scroll-cue" href="#next-page"><span></span> when you're ready, turn the page</a>
+    </section>
+
+    <section class="next-page" id="next-page" aria-label="A gentle transition to the rest of your story">
+      <p class="eyebrow"><span></span> and then, our story kept going</p>
+      <h2>One little hello.<br /><em>A thousand more moments.</em></h2>
+      <p>This is where the next chapter will begin.</p>
+      <a href="#chapter-two" class="return-button">Turn to chapter two <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="story-chapter chapter-two" id="chapter-two" aria-labelledby="chapter-two-title">
+      <div class="chapter-two__intro chapter-reveal">
+        <p class="eyebrow"><span></span> chapter two · how we met</p>
+        <h2 id="chapter-two-title">A little hello<br /><em>became our story.</em></h2>
+        <p>Just the moments and words already saved in our story.</p>
+        <a class="chapter-turn" href="#chapter-three">Keep turning <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="story-timeline" aria-label="Our story so far">
+        <article class="story-beat chapter-reveal"><span class="story-beat__mark" aria-hidden="true">✉</span><p class="story-beat__date">JULY 30, 2026 · 12:48 PM</p><h3>One reel, one hello</h3><p>I saw your profile in a reel’s likes and took a chance on saying hello. “I almost fell in love with your pfp.”</p></article>
+        <article class="story-beat chapter-reveal"><span class="story-beat__mark" aria-hidden="true">☾</span><p class="story-beat__date">THAT SAME DAY</p><h3>From a train to Spider-Man</h3><p>Your train signal kept slipping, but the conversation didn’t. We picked it up again after my movie, then traded playlists and found all those little things in common.</p></article>
+        <article class="story-beat chapter-reveal"><span class="story-beat__mark" aria-hidden="true">♡</span><p class="story-beat__date">AUGUST 1, 2026 · 12:01 AM</p><h3>My “half-girlfriend”</h3><p>I called you my half-girlfriend. Your “Mhmmm” became one of the first moments that felt like us.</p></article>
+        <article class="story-beat chapter-reveal"><span class="story-beat__mark" aria-hidden="true">✧</span><p class="story-beat__date">AUGUST 1, 2026 · 9:30 PM</p><h3>Three little letters</h3><p>Just hours after that little half-girlfriend moment, three letters said what we were both feeling.</p></article>
+        <article class="story-beat chapter-reveal"><span class="story-beat__mark" aria-hidden="true">▣</span><p class="story-beat__date">OCTOBER 19, 2026</p><h3>Our online photo booth</h3><p>A few goofy frames, two screens, and one afternoon I’m so glad we saved.</p></article>
+      </div>
+      <section class="conversation-keepsake chapter-reveal" aria-label="Our first conversations">
+        <header class="conversation-keepsake__heading"><p class="conversation-keepsake__label">THE DAY IT ALL STARTED</p><h3>Our first<br /><em>conversations.</em></h3><time datetime="2026-07-30T12:48:00">JULY 30, 2026 · 12:48 PM</time><span class="conversation-keepsake__stamp" aria-hidden="true">♡</span></header>
+        <div class="chat-scrap" aria-label="Original messages in order">
+          <p class="chat-scrap__time"><time datetime="2026-07-30T12:48:00">JULY 30, 2026 · 12:48 PM</time></p>
+          <p class="chat-scrap__bubble"><span class="chat-scrap__sender">Ayush</span>Lol these people. I almost fell in love with your pfp.</p>
+          <p class="chat-scrap__bubble chat-scrap__bubble--reply"><span class="chat-scrap__sender">Ammu</span>Ohhh thank you! Btw where did u get my account from?</p>
+          <p class="chat-scrap__bubble"><span class="chat-scrap__sender">Ayush</span>Insta recommended somehow.</p>
+          <p class="chat-scrap__time"><time datetime="2026-08-01T00:01:00">AUGUST 1, 2026 · 12:01 AM</time></p>
+          <p class="chat-scrap__bubble"><span class="chat-scrap__sender">Ayush</span>You are my half girlfriend <span aria-label="heart">♥</span></p>
+          <p class="chat-scrap__bubble chat-scrap__bubble--reply"><span class="chat-scrap__sender">Ammu</span>Mhmmm <span aria-label="heart">♥</span></p>
+          <p class="chat-scrap__time"><time datetime="2026-08-01T21:30:00">AUGUST 1, 2026 · 9:30 PM</time></p>
+          <p class="chat-scrap__bubble"><span class="chat-scrap__sender">Ayush</span>ilysm <span aria-label="heart">♥</span></p>
+          <span class="chat-scrap__stamp chat-scrap__stamp--one" aria-hidden="true">♡</span><span class="chat-scrap__stamp chat-scrap__stamp--two" aria-hidden="true">✦</span>
+        </div>
+        <p class="keepsake-annotation"><span data-editable-note="conversation">Little did we know where this conversation would take us. ♡</span><button type="button" data-edit-note="conversation" aria-label="Edit the handwritten conversation note">edit note</button></p>
+      </section>
+    </section>
+
+    <section class="story-chapter chapter-three" id="chapter-three" aria-labelledby="chapter-three-title">
+      <div class="chapter-three__sky" aria-hidden="true"><span class="chapter-star star-one">✦</span><span class="chapter-star star-two">✧</span><span class="chapter-star star-three">✦</span><span class="chapter-moon">☾</span></div>
+      <div class="chapter-three__heading chapter-reveal"><p class="eyebrow"><span></span> chapter three · two cities, one moon</p><h2 id="chapter-three-title">Different cities.<br /><em>One little sky.</em></h2><p>Ghaziabad to Chennai, with a whole sky between us—and one moon we can both look up to.</p></div>
+      <div class="city-bridge chapter-reveal" aria-label="Ghaziabad and Chennai beneath the same moon">
+        <div class="city-scene city-scene--ghaziabad"><span class="city-scene__label">GHAZIABAD</span><svg viewBox="0 0 360 180" role="img" aria-label="Illustrated Ghaziabad skyline at night"><path d="M0 156h360v24H0zM18 156V92h55v64M80 156V63h49v93M137 156V111h44v45M190 156V79h66v77M264 156V103h77v53"/><path d="M30 106h9v10h-9m18-10h9v10h-9m36-26h9v10h-9m18-10h9v10h-9m-9 28h9v10h-9m52-7h9v10h-9m67-51h9v11h-9m19-11h9v11h-9m19-11h9v11h-9m-44 34h9v11h-9m62-22h9v10h-9m20-10h9v10h-9m20-10h9v10h-9"/></svg><span class="city-scene__note">where my hello began</span></div>
+        <div class="city-connection"><span class="city-connection__line"></span><span class="city-connection__plane" aria-hidden="true">✈</span><span class="city-connection__caption">one moon, two windows</span></div>
+        <div class="city-scene city-scene--chennai"><span class="city-scene__label">CHENNAI</span><svg viewBox="0 0 360 180" role="img" aria-label="Illustrated Chennai skyline at night"><path d="M0 156h360v24H0zM17 156V100h49v56M70 156V67h34v89M109 156V112h66v44M181 156V89h54v67M242 156V57h42v99M291 156V105h52v51"/><path d="M28 114h9v10h-9m19-10h9v10h-9m25-28h8v10h-8m19-10h8v10h-8m10 29h9v10h-9m19-10h9v10h-9m20-10h9v10h-9m25-33h9v10h-9m19-10h9v10h-9m37-39h8v10h-8m15-10h8v10h-8m18 28h8v10h-8m19-10h8v10h-8m18-10h8v10h-8"/></svg><span class="city-scene__note">where my Ammu looks up</span></div>
+      </div>
+      <div class="first-sky-keepsake chapter-reveal"><img src="assets/stars/first-hello-sky.png" width="1638" height="2315" alt="The existing July 30, 2026 first-message sky chart, centered on Ghaziabad." loading="lazy"/><div><p class="eyebrow">THE FIRST HELLO · JULY 30, 2026 · 12:48 PM</p><h3>The sky I remember.</h3><p>The chart was made for the moment and location already recorded on the original site: Ghaziabad, India.</p><aside class="sky-note"><strong>Rigel Kentaurus</strong><p>The chart notes that light leaving this star on the day we first messaged is still on its way to us, arriving around 2030.</p></aside><p class="sky-attribution">Star map: <a href="https://skyofyourday.com/" target="_blank" rel="noreferrer">Sky of Your Day</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a> · HYG star data.</p><button class="secret-star-button" type="button" aria-expanded="false" aria-controls="potato-secret">✦ a tiny royal secret</button><p class="potato-secret" id="potato-secret" hidden>By royal decree, Ammu is hereby crowned ruler of sleepy texts, tiny jealousies, silly potatoes, and my entire heart. <span>— your loyal Chellakussu ♡</span></p></div></div>
+      <a class="chapter-turn chapter-turn--light" href="#chapter-four">Keep turning <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="story-chapter chapter-four" id="chapter-four" aria-labelledby="chapter-four-title">
+      <div class="chapter-four__heading chapter-reveal"><p class="eyebrow"><span></span> chapter four · the little things</p><h2 id="chapter-four-title">Our days, saved<br /><em>in little frames.</em></h2><p>Photos, silly photo-booth strips, the voices we keep close, and one song cover—using the original site’s media.</p></div>
+      <div class="keepsake-gallery" aria-label="A selection of existing photos and photo booth memories">
+        <button class="keepsake-photo chapter-reveal" type="button" data-lightbox="assets/photos/ammu-purple-glasses.jpeg" data-caption="Ammu wearing round glasses"><img src="assets/photos/ammu-purple-glasses.jpeg" width="900" height="1600" alt="Ammu wearing round glasses" loading="lazy"/><span>Ammu’s little smile</span></button>
+        <button class="keepsake-photo chapter-reveal" type="button" data-lightbox="assets/photos/ammu-black-white.jpeg" data-caption="Ammu in a black and white portrait"><img src="assets/photos/ammu-black-white.jpeg" width="720" height="1280" alt="Ammu in a black and white portrait" loading="lazy"/><span>soft in black & white</span></button>
+        <button class="keepsake-photo chapter-reveal" type="button" data-lightbox="assets/photos/ammu-saree.jpeg" data-caption="Ammu dressed up in a red and gold outfit"><img src="assets/photos/ammu-saree.jpeg" width="893" height="1588" alt="Ammu dressed up in a red and gold outfit" loading="lazy"/><span>all dressed up</span></button>
+        <button class="keepsake-photo chapter-reveal" type="button" data-lightbox="assets/photos/ammu-playful.jpeg" data-caption="Ammu making a playful pose for the camera"><img src="assets/photos/ammu-playful.jpeg" width="900" height="1600" alt="Ammu making a playful pose for the camera" loading="lazy"/><span>the playful one</span></button>
+        <button class="keepsake-photo chapter-reveal" type="button" data-lightbox="assets/photos/ammu-night.jpeg" data-caption="Ammu in a soft, low-light portrait"><img src="assets/photos/ammu-night.jpeg" width="899" height="1599" alt="Ammu in a soft, low-light portrait" loading="lazy"/><span>our late-night sky</span></button>
+        <button class="keepsake-photo chapter-reveal" type="button" data-lightbox="assets/photos/ammu-soft-smile.jpeg" data-caption="Ammu resting with a soft smile"><img src="assets/photos/ammu-soft-smile.jpeg" width="899" height="1599" alt="Ammu resting with a soft smile" loading="lazy"/><span>my soft-smile Ammu</span></button>
+      </div>
+      <div class="photobooth-keepsakes chapter-reveal"><p class="eyebrow"><span></span> OCTOBER 19, 2026 · ONLINE PHOTO BOOTH</p><div><figure><img src="assets/photobooth/oct-19-laugh-strip.jpg" width="1600" height="3960" alt="Black and white online photo booth strip of us together." loading="lazy"/><figcaption>The almost-laugh · 11:49 AM</figcaption></figure><figure><img src="assets/photobooth/oct-19-spiderman-strip.jpg" width="1600" height="3960" alt="Sepia photo booth strip of us together with a Spider-Man sticker." loading="lazy"/><figcaption>Spidey joined us · 11:52 AM</figcaption></figure><figure><img src="assets/photobooth/oct-19-cat-strip.jpg" width="1600" height="4140" alt="Color photo booth strip with a black cat sticker." loading="lazy"/><figcaption>The cat stole the show · 1:21 PM</figcaption></figure></div></div>
+      <div class="listening-room chapter-reveal"><div><p class="eyebrow"><span></span> little things to listen to</p><h3>A little closer,<br /><em>in your own voices.</em></h3><p>Choose a recording to play. Nothing starts on its own.</p></div><div class="sound-decks">
+        <article class="sound-deck sound-deck--ammu"><p class="sound-deck__label">AMMU’S LITTLE VOICES</p><div class="voice-cassette" aria-hidden="true"><span class="voice-cassette__reel"></span><span class="voice-cassette__window"></span><span class="voice-cassette__reel"></span><small>voice no. 01</small></div><h4 class="sound-deck__title">Voice note 1 of 5</h4><div class="audio-waveform" data-audio-waveform aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="player-controls"><button type="button" class="player-toggle" data-player-toggle aria-label="Play voice note">▶</button><input type="range" min="0" max="1000" value="0" data-player-seek aria-label="Seek through Ammu’s voice note"/><span data-player-time>--:-- / --:--</span></div><select data-track-select aria-label="Choose Ammu's voice note"><option value="assets/audio/hindi-lyrics-01.ogg">Voice note 1</option><option value="assets/audio/hindi-lyrics-02.ogg">Voice note 2</option><option value="assets/audio/hindi-lyrics-03.ogg">Voice note 3</option><option value="assets/audio/hindi-lyrics-04.ogg">Voice note 4</option><option value="assets/audio/hindi-lyrics-05.ogg">Voice note 5</option></select><audio preload="none" data-story-audio src="assets/audio/hindi-lyrics-01.ogg"></audio></article>
+        <article class="sound-deck sound-deck--ayush"><p class="sound-deck__label">AYUSH’S LITTLE NOTES</p><div class="voice-cassette" aria-hidden="true"><span class="voice-cassette__reel"></span><span class="voice-cassette__window"></span><span class="voice-cassette__reel"></span><small>side a · for ammu</small></div><h4 class="sound-deck__title">My voice note 1 of 3</h4><div class="audio-waveform" data-audio-waveform aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="player-controls"><button type="button" class="player-toggle" data-player-toggle aria-label="Play voice note">▶</button><input type="range" min="0" max="1000" value="0" data-player-seek aria-label="Seek through Ayush’s voice note"/><span data-player-time>--:-- / --:--</span></div><select data-track-select aria-label="Choose Ayush's voice note"><option value="assets/audio/my-voice-note-01.ogg">Voice note 1</option><option value="assets/audio/my-voice-note-02.ogg">Voice note 2</option><option value="assets/audio/my-voice-note-03.ogg">Voice note 3</option></select><audio preload="none" data-story-audio src="assets/audio/my-voice-note-01.ogg"></audio></article>
+      </div></div>
+      <article class="song-keepsake chapter-reveal" aria-label="For my favourite singer">
+        <figure class="song-keepsake__visual"><div class="song-film-frame"><img src="assets/photos/ammu-soft-smile.jpeg" width="899" height="1599" alt="Ammu, whose song cover is saved in this little film frame." loading="lazy" decoding="async"/><span class="song-film-frame__sprocket" aria-hidden="true">✦</span></div><figcaption>a little song, kept close</figcaption></figure>
+        <div class="song-keepsake__copy"><p class="eyebrow">FOR MY FAVOURITE SINGER</p><h3>Can’t Help Falling in Love</h3><p>Your cover, saved like a little piece of home.</p><p class="song-keepsake__note">“Damn, I fell in love a little more.”</p>
+          <div class="song-player" aria-label="Song player"><div class="song-player__record" aria-hidden="true"><span>♡</span></div><div class="song-player__controls"><button type="button" class="player-toggle" data-song-toggle aria-label="Play Ammu’s song cover">▶</button><div class="song-player__track"><div class="audio-waveform audio-waveform--song" data-audio-waveform aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><input type="range" min="0" max="1000" value="0" data-song-seek aria-label="Seek through the song cover"/><div class="song-player__times"><span data-song-time>--:--</span><label>volume <input type="range" min="0" max="1" step="0.01" value="1" data-song-volume aria-label="Song volume"/></label><span data-song-duration>--:--</span></div></div></div><audio preload="none" data-song-audio><source src="assets/media/ammus-song-cover.mp4" type="audio/mp4"/></audio></div>
+          <p class="keepsake-annotation keepsake-annotation--singer"><span data-editable-note="singer">This one’s my favourite because it’s you. ♡</span><button type="button" data-edit-note="singer" aria-label="Edit the handwritten singer note">edit note</button></p>
+        </div>
+      </article>
+      <a class="chapter-turn" href="#chapter-five">Keep turning <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="story-chapter chapter-five universe-chapter" id="chapter-five" aria-labelledby="chapter-five-title">
+      <picture class="chapter-five__art universe-art"><source media="(max-width:620px)" srcset="assets/diary-night-opening-mobile.jpg"/><img src="assets/diary-night-opening.jpg" width="1672" height="941" alt="A moonlit night beneath a cherry blossom tree, with the couple, a lantern, the moon and their sleepy cat." loading="lazy" decoding="async"/></picture>
+      <div class="universe-depth" aria-hidden="true"><div class="universe-depth__stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="universe-depth__mist"></div><div class="universe-depth__petals"><i>✿</i><i>✿</i><i>✿</i><i>✿</i><i>✿</i><i>✿</i><i>✿</i></div><div class="universe-depth__fireflies"><i></i><i></i><i></i><i></i></div></div>
+      <div class="universe-topline"><span>☾ &nbsp; our little universe</span><span>GHAZIABAD ↔ CHENNAI</span></div>
+      <div class="universe-copy chapter-reveal"><p class="eyebrow"><span></span> chapter five · just us beneath the same sky</p><h2 id="chapter-five-title">A whole little world<br/><em>made of us.</em></h2><p>Stay a little. There are small things to find in our night sky.</p><span class="universe-copy__handwritten">one moon · two windows · always us ♡</span></div>
+      <button class="universe-moon" type="button" data-moon-light aria-label="Touch the moon for more moonlight" aria-pressed="false"><span class="universe-moon__aura"></span><span class="universe-moon__label">touch the moon</span></button>
+      <div class="universe-constellation" aria-label="Little messages hidden in the stars"><button class="universe-star universe-star--1" type="button" data-star-message="Same moon above Ghaziabad and Chennai." aria-label="Discover a message in this star" aria-pressed="false">✦</button><button class="universe-star universe-star--2" type="button" data-star-message="Our first hello · July 30, 2026 · 12:48 PM." aria-label="Discover a message in this star" aria-pressed="false">✧</button><button class="universe-star universe-star--3" type="button" data-star-message="A little hello became our whole little world." aria-label="Discover a message in this star" aria-pressed="false">✦</button><button class="universe-star universe-star--4" type="button" data-star-message="All the way from Ghaziabad to Chennai, I choose you." aria-label="Discover a message in this star" aria-pressed="false">✧</button><button class="universe-star universe-star--5" type="button" data-star-message="Sleepy voice notes, silly talks, and all the little things." aria-label="Discover a message in this star" aria-pressed="false">✦</button><button class="universe-star universe-star--6" type="button" data-star-message="You make even the faraway nights feel close." aria-label="Discover a message in this star" aria-pressed="false">✧</button></div>
+      <button class="universe-lantern" type="button" data-lantern-light aria-label="Keep the little lantern glowing" aria-pressed="false"><span aria-hidden="true">♡</span><small>keep a little glow</small></button>
+      <button class="universe-cat" type="button" data-sleepy-cat aria-label="Say hello to the sleepy cat" aria-pressed="false"><span aria-hidden="true">✧</span><small>psst… sleepy cat</small></button>
+      <aside class="universe-character" aria-label="Our 16 couple stickers"><div class="universe-character__float"><button class="universe-character__sticker" id="active-couple-sticker" type="button" aria-label="Tap to change our floating couple sticker"><span class="couple-sprite" id="active-couple-sprite" style="--sprite-x:0%;--sprite-y:0%"></span><i class="universe-character__spark" aria-hidden="true">✦</i></button></div><div class="universe-character__tools"><button type="button" data-sticker-step="-1" aria-label="Previous couple sticker">‹</button><span id="sticker-count" aria-live="polite">01 / 16</span><button type="button" data-sticker-step="1" aria-label="Next couple sticker">›</button></div><details class="sticker-drawer"><summary>open our sticker box · 16</summary><div class="sticker-drawer__grid" id="sticker-drawer-grid" aria-label="Choose a couple sticker"></div></details></aside>
+      <p class="universe-discovery" id="universe-message" aria-live="polite">Touch the moon, find a little star, or say hi to the sleepy cat.</p>
+      <a class="universe-to-lilies" href="#chapter-six" data-night-to-lilies><span>follow this little light</span><span>into the lilies&nbsp; →</span></a><div class="universe-transition" aria-hidden="true"><span>✦</span></div>
+    </section>
+    <section class="story-chapter chapter-six lily-ending" id="chapter-six" aria-labelledby="chapter-six-title">
+      <div class="lily-ending__atmosphere" aria-hidden="true"><i class="lily-light lily-light--one"></i><i class="lily-light lily-light--two"></i><i class="lily-light lily-light--three"></i></div>
+      <div class="lily-affirmation-stars" aria-label="Little things I want you to remember">
+        <button class="lily-affirmation-star lily-affirmation-star--1" type="button" data-message="You are strong." data-side="right" aria-label="Reveal: You are strong" aria-pressed="false"><span aria-hidden="true">✦</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--2" type="button" data-message="You are beautiful." data-side="left" aria-label="Reveal: You are beautiful" aria-pressed="false"><span aria-hidden="true">✧</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--3" type="button" data-message="I’m yours." data-side="right" aria-label="Reveal: I’m yours" aria-pressed="false"><span aria-hidden="true">✦</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--4" type="button" data-message="You are mine." data-side="left" aria-label="Reveal: You are mine" aria-pressed="false"><span aria-hidden="true">✧</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--5" type="button" data-message="I love you." data-side="right" aria-label="Reveal: I love you" aria-pressed="false"><span aria-hidden="true">✦</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--6" type="button" data-message="You belong to me." data-side="left" aria-label="Reveal: You belong to me" aria-pressed="false"><span aria-hidden="true">✧</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--7" type="button" data-message="You’re so hot." data-side="right" aria-label="Reveal: You’re so hot" aria-pressed="false"><span aria-hidden="true">✦</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--8" type="button" data-message="So adorable." data-side="left" aria-label="Reveal: So adorable" aria-pressed="false"><span aria-hidden="true">✧</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--9" type="button" data-message="Cute, always." data-side="right" aria-label="Reveal: Cute, always" aria-pressed="false"><span aria-hidden="true">✦</span></button>
+        <button class="lily-affirmation-star lily-affirmation-star--10" type="button" data-message="I’m so grateful to have you." data-side="left" aria-label="Reveal: I’m so grateful to have you" aria-pressed="false"><span aria-hidden="true">✧</span></button>
+      </div>
+      <div class="lily-ending__inner">
+        <header class="lily-ending__heading chapter-reveal"><p class="eyebrow"><span></span> the last page · a little something for you</p><h2 id="chapter-six-title">For all the light<br /><em>you bring to my world.</em></h2><p>A little bouquet, gathered slowly—with all my love.</p></header>
+        <div class="lily-stage" id="lily-stage" aria-label="Interactive lily bouquet">
+          <div class="lily-stage__particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="lily-seed" aria-hidden="true">✦</span>
+          <button class="lily-bouquet-trigger" id="lily-bouquet-trigger" type="button" aria-label="Tap the lilies and send a few petals drifting">
+            <svg class="lily-bouquet-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 610" role="img" aria-labelledby="lily-title lily-description">
+              <title id="lily-title">White lilies for Tara</title><desc id="lily-description">Three hand-drawn ivory lilies bloom above sage leaves and a dusty-rose ribbon.</desc>
+              <defs>
+                <radialGradient id="lily-stage-glow"><stop stop-color="#f6d9b2" stop-opacity=".52"/><stop offset="1" stop-color="#f6d9b2" stop-opacity="0"/></radialGradient>
+                <linearGradient id="lily-petal-fill" x1=".12" y1=".12" x2=".86" y2=".95"><stop stop-color="#fffdf4"/><stop offset=".55" stop-color="#f7eadc"/><stop offset="1" stop-color="#e9cdd0"/></linearGradient>
+                <linearGradient id="lily-leaf-fill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b6c2a3"/><stop offset=".5" stop-color="#718573"/><stop offset="1" stop-color="#425d58"/></linearGradient>
+                <linearGradient id="lily-ribbon-fill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e4aaa9"/><stop offset="1" stop-color="#a86478"/></linearGradient>
+                <filter id="lily-soft-shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+              </defs>
+              <ellipse class="lily-ground-glow" cx="380" cy="506" rx="225" ry="55" fill="url(#lily-stage-glow)" filter="url(#lily-soft-shadow)"/>
+              <g class="lily-stems" fill="none" stroke="#718674" stroke-linecap="round" stroke-linejoin="round">
+                <path class="lily-stem" d="M374 520 C335 420 282 300 250 171"/><path class="lily-stem" d="M381 521 C379 392 380 235 380 113"/><path class="lily-stem" d="M386 520 C418 420 466 304 493 184"/>
+              </g>
+              <g class="lily-leaves" fill="url(#lily-leaf-fill)" stroke="#d3d6b5" stroke-opacity=".5" stroke-width="1.5">
+                <path class="lily-leaf" d="M356 441 C296 385 242 385 201 421 C258 441 315 451 356 441Z"/><path class="lily-vein" d="M356 441 C302 416 254 410 211 418"/>
+                <path class="lily-leaf" d="M367 399 C414 339 465 329 508 352 C465 385 414 401 367 399Z"/><path class="lily-vein" d="M367 399 C413 374 461 356 499 352"/>
+                <path class="lily-leaf" d="M371 471 C322 431 282 438 250 469 C295 485 338 488 371 471Z"/><path class="lily-vein" d="M371 471 C330 455 294 453 260 468"/>
+                <path class="lily-leaf" d="M390 454 C439 409 489 414 526 444 C479 463 430 471 390 454Z"/><path class="lily-vein" d="M390 454 C432 438 474 435 516 444"/>
+                <path class="lily-leaf" d="M374 365 C335 328 308 293 297 258 C337 279 366 315 374 365Z"/><path class="lily-vein" d="M374 365 C354 322 332 292 304 265"/>
+                <path class="lily-leaf" d="M388 339 C426 296 442 259 438 226 C408 252 389 290 388 339Z"/><path class="lily-vein" d="M388 339 C410 294 425 263 434 235"/>
+              </g>
+              <g class="lily-flower lily-flower--one" transform="translate(250 171)">
+                <g class="lily-bud"><path d="M0 9 C-30 -10 -23 -47 -5 -59 C-2 -42 4 -41 7 -59 C29 -41 30 -10 0 9Z" fill="url(#lily-petal-fill)" stroke="#d8b8aa" stroke-width="2"/><path d="M0 7V-41" stroke="#b98582" stroke-width="2"/></g>
+                <g class="lily-open"><g class="lily-petal-wrap" transform="rotate(0)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(60)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(120)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(180)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(240)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(300)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-heart"><circle r="15" fill="#dca9a6"/><circle r="7" fill="#f4d99d"/></g><g class="lily-stamen"><path d="M0 2L-7 -28M2 2L8 -34M-2 2L-16 -24M3 2L19 -25" stroke="#c69a55" stroke-width="2" stroke-linecap="round"/><circle cx="-7" cy="-28" r="3" fill="#a87462"/><circle cx="8" cy="-34" r="3" fill="#a87462"/><circle cx="-16" cy="-24" r="3" fill="#a87462"/><circle cx="19" cy="-25" r="3" fill="#a87462"/></g></g>
+              </g>
+              <g class="lily-flower lily-flower--two" transform="translate(380 113) scale(.84)">
+                <g class="lily-bud"><path d="M0 9 C-30 -10 -23 -47 -5 -59 C-2 -42 4 -41 7 -59 C29 -41 30 -10 0 9Z" fill="url(#lily-petal-fill)" stroke="#d8b8aa" stroke-width="2"/><path d="M0 7V-41" stroke="#b98582" stroke-width="2"/></g>
+                <g class="lily-open"><g class="lily-petal-wrap" transform="rotate(0)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(60)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(120)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(180)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(240)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(300)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-heart"><circle r="15" fill="#dca9a6"/><circle r="7" fill="#f4d99d"/></g><g class="lily-stamen"><path d="M0 2L-7 -28M2 2L8 -34M-2 2L-16 -24M3 2L19 -25" stroke="#c69a55" stroke-width="2" stroke-linecap="round"/><circle cx="-7" cy="-28" r="3" fill="#a87462"/><circle cx="8" cy="-34" r="3" fill="#a87462"/><circle cx="-16" cy="-24" r="3" fill="#a87462"/><circle cx="19" cy="-25" r="3" fill="#a87462"/></g></g>
+              </g>
+              <g class="lily-flower lily-flower--three" transform="translate(493 184) scale(.72)">
+                <g class="lily-bud"><path d="M0 9 C-30 -10 -23 -47 -5 -59 C-2 -42 4 -41 7 -59 C29 -41 30 -10 0 9Z" fill="url(#lily-petal-fill)" stroke="#d8b8aa" stroke-width="2"/><path d="M0 7V-41" stroke="#b98582" stroke-width="2"/></g>
+                <g class="lily-open"><g class="lily-petal-wrap" transform="rotate(0)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(60)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(120)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(180)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(240)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-petal-wrap" transform="rotate(300)"><path class="lily-petal" d="M0 3 C-39 -18 -44 -79 -17 -112 C-4 -106 7 -54 0 3Z"/></g><g class="lily-heart"><circle r="15" fill="#dca9a6"/><circle r="7" fill="#f4d99d"/></g><g class="lily-stamen"><path d="M0 2L-7 -28M2 2L8 -34M-2 2L-16 -24M3 2L19 -25" stroke="#c69a55" stroke-width="2" stroke-linecap="round"/><circle cx="-7" cy="-28" r="3" fill="#a87462"/><circle cx="8" cy="-34" r="3" fill="#a87462"/><circle cx="-16" cy="-24" r="3" fill="#a87462"/><circle cx="19" cy="-25" r="3" fill="#a87462"/></g></g>
+              </g>
+              <g class="lily-bouquet-tie"><path d="M370 482 C329 450 288 467 300 493 C310 513 350 500 379 487 C406 471 443 469 441 494 C439 519 394 515 379 491 C369 510 351 535 325 543 C325 517 349 492 379 487 C405 494 425 523 427 545 C402 540 387 516 379 491Z" fill="url(#lily-ribbon-fill)" stroke="#f0c2b3" stroke-width="2"/><path d="M378 489 C370 529 378 548 389 567" fill="none" stroke="#b87685" stroke-width="9" stroke-linecap="round"/><path d="M378 489 C369 530 378 548 389 567" fill="none" stroke="#efb8b1" stroke-width="2" stroke-linecap="round"/></g>
+            </svg>
+          </button>
+          <button class="memory-petal memory-petal--one" type="button" data-petal-memory="Our first hello · July 30, 2026, at 12:48 PM." aria-label="A petal holds a memory: our first hello"><span aria-hidden="true">✿</span></button>
+          <button class="memory-petal memory-petal--two" type="button" data-petal-memory="Ghaziabad and Chennai · two cities, one moon." aria-label="A petal holds a memory: two cities, one moon"><span aria-hidden="true">✿</span></button>
+          <button class="memory-petal memory-petal--three" type="button" data-petal-memory="The voice notes we keep close, saved in our little diary." aria-label="A petal holds a memory: our voice notes"><span aria-hidden="true">✿</span></button>
+          <div class="lily-reaction" aria-hidden="true"><i>✿</i><i>✿</i><i>✿</i><i>✧</i><i>♡</i></div>
+          <p class="lily-stage__hint">tap the bouquet · let a petal tell you something</p>
+          <p class="lily-memory-reveal" id="lily-memory-reveal" aria-live="polite"></p>
+        </div>
+        <div class="lily-final-message" id="lily-final-message" aria-live="polite">
+          <p>I couldn't give you the entire universe...</p><p>So I tried to make a little one for you.</p><p>Happy birthday, Tara.</p><p class="lily-final-message__signoff">Always, us. ♡</p>
+        </div>
+        <div class="lily-actions"><button class="lily-replay" id="lily-replay" type="button">↻ <span>watch the lilies bloom again</span></button><button class="closing-envelope" type="button" aria-expanded="false" aria-controls="closing-letter"><span class="closing-envelope__seal" aria-hidden="true">♡</span><span>Open your birthday letter</span><span aria-hidden="true">↗</span></button></div>
+        <article class="closing-letter" id="closing-letter" hidden><p class="closing-letter__date">NOVEMBER 19 · YOUR DAY</p><h3>My dearest Ammu,</h3><p>From one random reel to playlists, sleepy texts, and three months of us—how did one little hello turn into my favorite part of every day? I love how real and honest you are, how you share even the smallest things with me, and how you make me feel good about being exactly who I am. Your pretty voice, the way you quietly listen when something matters, your tiny jealous moments, and the way you still text me sleepy—I keep all of it close. Thank you for trusting me with your heart. I’ll keep meeting that trust with patience, honesty, and care. Happy birthday, my Potato Queen. En anbe, my silly potato queen.</p><p class="closing-letter__signoff">all my love, ♡</p></article>
+        <div class="lily-ending__keepsakes"><div class="birthday-countdown" id="birthday-countdown" aria-label="Countdown to November 19 India time"><p id="birthday-countdown-label">Counting down to your day · November 19</p><div><span><strong data-countdown-unit="days">--</strong><small>days</small></span><span><strong data-countdown-unit="hours">--</strong><small>hours</small></span><span><strong data-countdown-unit="minutes">--</strong><small>minutes</small></span><span><strong data-countdown-unit="seconds">--</strong><small>seconds</small></span></div></div><a class="diary-doorway" href="archive.html">Open our little diary <span aria-hidden="true">→</span></a></div>
+        <p class="chapter-six__end">our story is still ours <span aria-hidden="true">♡</span></p>
+      </div>
+    </section>
+
+    <dialog class="keepsake-lightbox" id="keepsake-lightbox" aria-label="Photo memory"><button type="button" data-lightbox-close aria-label="Close photo">×</button><img alt=""/><p></p></dialog>
+  </main>
+  <footer class="preview-footer"><span>DEAR AMMU</span><i aria-hidden="true">✦</i><span>SIX CHAPTERS · PRIVATE PREVIEW</span></footer>
+</body>
+</html>
